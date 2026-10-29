@@ -17,6 +17,12 @@ Le code est déjà sur GitHub (`Mal-VI/Budget`). Il reste 3 réglages, à faire 
 
 Ouvre-la toujours depuis l'icône : c'est là que tes données sont stockées. Safari et l'appli installée ne partagent pas les mêmes données sur iPhone.
 
+## Argent sur ton compte
+
+Sur l'accueil, touche **Sur ton compte** et recopie le solde affiché dans l'appli de ta banque. L'appli ajoute ensuite les opérations datées d'après (importées ou ajoutées à la main). Quand tu regardes un mois passé, elle recalcule ce qu'il y avait à la fin du mois. Si le montant s'écarte du vrai, touche la case et retape ton solde du jour.
+
+« Bilan du mois », c'est autre chose : tes revenus moins tes dépenses du mois.
+
 ## Importer ses relevés
 
 ⚙︎ > **Importer des relevés (PDF ou CSV)**. Tu peux en sélectionner plusieurs d'un coup.
