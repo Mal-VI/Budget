@@ -17,9 +17,11 @@ Le code est déjà sur GitHub (`Mal-VI/Budget`). Il reste 3 réglages, à faire 
 
 Ouvre-la toujours depuis l'icône : c'est là que tes données sont stockées. Safari et l'appli installée ne partagent pas les mêmes données sur iPhone.
 
-## Argent sur ton compte
+## Ton argent (compte + épargne)
 
-Sur l'accueil, touche **Sur ton compte** et recopie le solde affiché dans l'appli de ta banque. L'appli ajoute ensuite les opérations datées d'après (importées ou ajoutées à la main). Quand tu regardes un mois passé, elle recalcule ce qu'il y avait à la fin du mois. Si le montant s'écarte du vrai, touche la case et retape ton solde du jour.
+Sur l'accueil, touche **Ton argent** et entre le total que t'affiche ta banque : compte courant + épargne (Livret A…). L'appli ajoute ensuite les opérations datées d'après (importées ou ajoutées à la main). Quand tu regardes un mois passé, elle recalcule ce que tu avais à la fin du mois. Si le montant s'écarte du vrai, touche la case et retape ton total du jour.
+
+Les virements entre ton compte et ton épargne ne changent pas ce total : ils sont classés « Épargne » (vers l'épargne) ou « Depuis l'épargne » (retour sur le compte), souvent automatiquement. Les intérêts du livret ne sont pas suivis : corrige le total de temps en temps.
 
 « Bilan du mois », c'est autre chose : tes revenus moins tes dépenses du mois.
 
