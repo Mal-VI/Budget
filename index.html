@@ -58,6 +58,7 @@
   .tx .info div { font-size: 15px; }
   .tx .info small { color: var(--muted); font-size: 12px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tx .amt { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tx .amt.muted { color: var(--muted); font-weight: 400; } /* entre tes comptes : ne compte pas */
   .insight { display: flex; gap: 10px; padding: 8px 0; font-size: 14px; line-height: 1.4; border-bottom: 1px solid var(--line); }
   .insight:last-child { border-bottom: 0; }
   .insight > span:first-child { flex: none; width: 22px; text-align: center; }
@@ -867,11 +868,12 @@
       }
       const c = catById(t.cat);
       const inc = t.type === "income";
+      const own = t.cat === "interne";
       const sub = t.note || t.label || "";
       html += `<div class="tx" data-id="${esc(t.id)}">
         <div class="dot" style="background:${c.color}22">${c.icon}</div>
         <div class="info"><div>${esc(c.label)}${isUncat(t.cat) && t.src === "csv" ? ' <span class="tag">à classer</span>' : ""}</div>${sub ? `<small>${esc(sub)}</small>` : ""}</div>
-        <div class="amt ${inc ? "pos" : ""}">${inc ? "+" : "-"}${fmt(t.amount)}</div></div>`;
+        <div class="amt ${own ? "muted" : inc ? "pos" : ""}">${own ? "⇄ " : inc ? "+" : "-"}${fmt(t.amount)}</div></div>`;
     }
     el.innerHTML = html;
   }
