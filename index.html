@@ -65,7 +65,7 @@
   .bud:last-child { border-bottom: 0; }
   .bud .top { display: flex; align-items: center; gap: 10px; }
   .bud .top span { flex: 1; font-size: 15px; }
-  .bud .top input { width: 96px; padding: 8px; text-align: right; font-size: 15px; }
+  .bud .top input { width: 96px; padding: 8px; text-align: right; font-size: 16px; } /* < 16px : l'iPhone zoome au clic */
   .bud .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 6px; }
   .bar { height: 8px; background: var(--bg); border-radius: 6px; overflow: hidden; margin-top: 6px; }
   .bar i { display: block; height: 100%; border-radius: 6px; }
@@ -142,6 +142,7 @@
       <div class="stat"><small>Dépenses</small><b class="neg" id="sExpense">0 €</b></div>
     </div>
     <div id="uncatBanner"></div>
+    <div id="backupBanner"></div>
     <section class="card"><h2>Analyse du mois</h2><div id="insights"></div></section>
     <section class="card"><h2>Dépenses par catégorie</h2><div id="donut"></div></section>
     <section class="card"><h2>6 derniers mois</h2><div id="bars"></div></section>
@@ -256,7 +257,7 @@
       { id: "aides", label: "Aides / bourse", icon: "🏛️", color: "#60a5fa" },
       { id: "famille", label: "Famille / cadeaux", icon: "🎁", color: "#f472b6" },
       { id: "vente", label: "Vente", icon: "🏷️", color: "#fbbf24" },
-      { id: "remb", label: "Rembour- sement", icon: "↩️", color: "#a78bfa" },
+      { id: "remb", label: "Rembour\u00ADsement", icon: "↩️", color: "#a78bfa" }, // \u00AD = césure seulement si ça ne tient pas
       { id: "autre_r", label: "Autre", icon: "•", color: "#94a3b8" }
     ]
   };
@@ -283,18 +284,19 @@
     [/REMBOURSEMENT|\bREMB\b|AVOIR|LYDIA|PAYPAL|WERO|PAYLIB/, "remb", "income"]
   ];
 
-  // Mots-clés reliant les actus à tes catégories de dépenses
+  // Mots-clés reliant les actus à tes catégories de dépenses.
+  // Comparés en mots entiers, sans accents ni majuscules (un "s" ou "x" final est accepté).
   const NEWS_KW = {
     _base: ["prix", "inflation", "pouvoir d'achat", "taux", "livret a", "épargne", "impôt", "impots", "smic", "salaire",
       "étudiant", "etudiant", "alternance", "apprenti", "jeune", "aide", "caf", "apl", "bourse", "banque", "crédit", "credit"],
     courses: ["alimentaire", "supermarché", "supermarche", "courses", "grande distribution"],
     logement: ["loyer", "logement", "électricité", "electricite", "gaz", "énergie", "energie", "edf", "apl", "crous"],
-    transport: ["carburant", "essence", "gazole", "diesel", "sncf", "train", "péage", "peage", "voiture", "permis", "assurance auto", "transport"],
+    transport: ["carburant", "essence", "gazole", "diesel", "sncf", "billet de train", "billets de train", "tgv", "ter", "péage", "peage", "voiture", "permis de conduire", "assurance auto", "transport"],
     restau: ["restaurant", "restauration", "fast-food"],
     abos: ["abonnement", "streaming", "netflix", "spotify", "forfait", "mobile", "box internet", "résiliation", "resiliation"],
     loisirs: ["jeu vidéo", "jeux vidéo", "cinéma", "cinema", "concert"],
     sante: ["santé", "sante", "mutuelle", "médicament", "medicament", "remboursement", "sécurité sociale", "securite sociale", "franchise médicale"],
-    shopping: ["soldes", "achat", "vinted", "amazon", "e-commerce"],
+    shopping: ["soldes", "achats en ligne", "black friday", "vinted", "amazon", "e-commerce"],
     etudes: ["étudiant", "etudiant", "université", "universite", "bourse", "crous", "cvec"],
     epargne: ["livret", "épargne", "epargne", "placement", "bourse de paris", "taux"]
   };
@@ -303,7 +305,8 @@
   const KEY = "budget.v1";
   const NEWS_KEY = "budget.news";
   let memoryFallback = null;
-  function blank() { return { version: 2, transactions: [], budgets: {}, rules: [] }; }
+  // hidden : identifiants des opérations importées puis supprimées, pour qu'un nouvel import ne les recrée pas
+  function blank() { return { version: 2, transactions: [], budgets: {}, rules: [], hidden: [] }; }
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
@@ -312,6 +315,7 @@
       if (!Array.isArray(d.transactions)) throw new Error("format");
       d.budgets = d.budgets && typeof d.budgets === "object" ? d.budgets : {};
       d.rules = Array.isArray(d.rules) ? d.rules : [];
+      d.hidden = Array.isArray(d.hidden) ? d.hidden : [];
       d.version = 2;
       return d;
     } catch (e) {
@@ -363,7 +367,8 @@
   const median = arr => { const a = [...arr].sort((x, y) => x - y); const n = a.length; return n ? (n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2) : 0; };
 
   // ================= État =================
-  const now = new Date();
+  // "let" : une appli installée peut rester en mémoire plusieurs jours, la date est remise à jour au retour (voir visibilitychange)
+  let now = new Date();
   let view = { y: now.getFullYear(), m: now.getMonth() };
   let page = "pHome";
   let showUncatOnly = false;
@@ -401,7 +406,8 @@
   }
 
   // ================= Analyses =================
-  // Dépenses récurrentes : même libellé, montant proche, sur au moins 2 mois différents parmi les 4 derniers
+  // Dépenses récurrentes : même libellé, montant proche, sur au moins 2 mois différents parmi les 4 derniers,
+  // et une seule opération par mois (plusieurs passages par mois = plutôt un magasin habituel qu'un prélèvement)
   function findRecurring(y, m) {
     const months = new Set([0, 1, 2, 3].map(k => { const s = shiftMonth(y, m, -k); return monthKey(s.y, s.m); }));
     const groups = {};
@@ -413,14 +419,14 @@
     }
     const out = [];
     for (const [key, list] of Object.entries(groups)) {
-      const byMonth = {};
-      for (const t of list) byMonth[t.date.slice(0, 7)] = (byMonth[t.date.slice(0, 7)] || 0) + t.amount;
+      const byMonth = {}, count = {};
+      for (const t of list) { const k = t.date.slice(0, 7); byMonth[k] = (byMonth[k] || 0) + t.amount; count[k] = (count[k] || 0) + 1; }
       const vals = Object.values(byMonth);
-      if (vals.length < 2) continue;
+      if (vals.length < 2 || Object.values(count).some(c => c > 1)) continue;
       const med = median(vals);
       if (!vals.every(v => Math.abs(v - med) <= med * 0.15)) continue;
-      const curK = monthKey(y, m);
-      out.push({ key, amount: Math.round(med), seenThisMonth: !!byMonth[curK], cat: list[list.length - 1].cat });
+      const curK = monthKey(y, m), p = shiftMonth(y, m, -1);
+      out.push({ key, amount: Math.round(med), seenThisMonth: !!byMonth[curK], seenLastMonth: !!byMonth[monthKey(p.y, p.m)], cat: list[list.length - 1].cat });
     }
     return out.sort((a, b) => b.amount - a.amount);
   }
@@ -437,9 +443,16 @@
     // 1. Projection de fin de mois (mois en cours seulement)
     const day = now.getDate(), dim = daysInMonth(view.y, view.m);
     if (isCurrent && day >= 5 && day < dim && list.length) {
+      // Les dépenses récurrentes (Navigo, forfait…) comptent comme fixes même hors des catégories fixes :
+      // sinon un pass de 86 € payé le 3 serait extrapolé à ~530 € sur le mois.
+      const recKeys = new Set(recurring.map(r => r.key));
       let fixed = 0, variable = 0;
-      for (const [cat, v] of Object.entries(spent)) (FIXED.has(cat) ? (fixed += v) : (variable += v));
-      const missingRec = recurring.filter(r => !r.seenThisMonth).reduce((s, r) => s + r.amount, 0);
+      for (const x of list) {
+        if (x.type !== "expense") continue;
+        if (FIXED.has(x.cat) || recKeys.has(labelKey(x.label || x.note))) fixed += x.amount; else variable += x.amount;
+      }
+      // Récurrents pas encore passés ce mois, s'ils étaient là le mois dernier (sinon ils ont peut-être été résiliés)
+      const missingRec = recurring.filter(r => !r.seenThisMonth && r.seenLastMonth).reduce((s, r) => s + r.amount, 0);
       const projExp = Math.round(fixed + variable / day * dim + missingRec);
       const projBal = t.inc - projExp;
       out.push({ icon: "🔮", cls: projBal >= 0 ? "pos" : "neg",
@@ -518,6 +531,13 @@
       ? `<div class="banner"><span>${uncat} opération(s) importée(s) à classer</span><button id="btnUncat">${showUncatOnly ? "Tout voir" : "Classer"}</button></div>` : "";
     if (!uncat) showUncatOnly = false;
     const bu = $("btnUncat"); if (bu) bu.onclick = () => { showUncatOnly = !showUncatOnly; renderHome(); if (showUncatOnly) $("listTitle").scrollIntoView({ behavior: "smooth" }); };
+
+    // Rappel de sauvegarde : sans export, tout est perdu si le téléphone est changé ou réinitialisé
+    const last = lastBackup();
+    const age = last ? Math.floor((new Date(todayStr()) - new Date(last)) / 864e5) : null;
+    $("backupBanner").innerHTML = db.transactions.length >= 10 && (age === null || age > 30)
+      ? `<div class="banner"><span>${age === null ? "Aucune sauvegarde de tes données pour l'instant" : `Dernière sauvegarde il y a ${age} jours`}</span><button id="btnBackupNow">Sauvegarder</button></div>` : "";
+    const bb = $("btnBackupNow"); if (bb) bb.onclick = exportData;
 
     const ins = computeInsights();
     $("insights").innerHTML = ins.length
@@ -635,20 +655,29 @@
   let newsData = null;
   try { newsData = JSON.parse(localStorage.getItem(NEWS_KEY) || "null"); } catch (e) { newsData = null; }
 
+  // Minuscules sans accents, apostrophe typographique ’ ramenée à ' (les flux de presse utilisent ’)
+  const foldText = s => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\u2019\u2018`]/g, "'");
   function myNewsKeywords() {
     // Tes 3 plus grosses catégories de dépenses sur les 3 derniers mois
     const tot = {};
     for (let k = 0; k < 3; k++) { const s = shiftMonth(now.getFullYear(), now.getMonth(), -k); for (const [c, v] of Object.entries(spentByCat(txOfMonth(s.y, s.m)))) tot[c] = (tot[c] || 0) + v; }
     const top = Object.entries(tot).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
     const map = [];
-    for (const kw of NEWS_KW._base) map.push({ kw, cat: null });
-    for (const c of top) for (const kw of (NEWS_KW[c] || [])) map.push({ kw, cat: c });
+    const add = (list, cat) => {
+      for (const kw of new Set((list || []).map(foldText))) {
+        // Mot entier : sinon "gaz" trouve "Gaza", "bourse" trouve "remboursement", "caf" trouve "café"…
+        const re = new RegExp("(^|[^a-z0-9])" + kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[sx]?(?![a-z0-9])");
+        map.push({ re, cat });
+      }
+    };
+    add(NEWS_KW._base, null);
+    for (const c of top) add(NEWS_KW[c], c);
     return map;
   }
   function scoreNews(item, kws) {
-    const txt = (" " + (item.title || "") + " " + (item.summary || "") + " ").toLowerCase();
+    const txt = foldText((item.title || "") + " " + (item.summary || ""));
     let score = 0; const cats = new Set();
-    for (const { kw, cat } of kws) if (txt.includes(kw)) { score += cat ? 2 : 1; if (cat) cats.add(cat); }
+    for (const { re, cat } of kws) if (re.test(txt)) { score += cat ? 2 : 1; if (cat) cats.add(cat); }
     return { score, cats: [...cats] };
   }
   async function fetchNews(manual) {
@@ -717,10 +746,21 @@
     $("fErr").textContent = "";
     $("fDeleteRow").style.display = tx ? "flex" : "none";
     disarm($("fDelete"), "Supprimer");
-    $("txOverlay").classList.add("open");
+    openSheet("txOverlay");
     if (!tx) setTimeout(() => $("fAmount").focus(), 50);
   }
-  const closeForm = () => $("txOverlay").classList.remove("open");
+  const closeForm = closeSheet;
+
+  // Fenêtres du bas : une entrée d'historique par fenêtre ouverte, pour que le bouton retour d'Android
+  // ferme la fenêtre au lieu de quitter l'appli (et de perdre la saisie)
+  function openSheet(id) {
+    $(id).classList.add("open");
+    if (!(history.state && history.state.sheet)) history.pushState({ sheet: 1 }, "");
+  }
+  function closeSheets() { document.querySelectorAll(".overlay.open").forEach(o => o.classList.remove("open")); }
+  function closeSheet() { if (history.state && history.state.sheet) history.back(); else closeSheets(); }
+  window.addEventListener("popstate", closeSheets);
+  if (history.state && history.state.sheet) history.replaceState(null, "");
 
   function saveForm() {
     const amount = parseAmount($("fAmount").value);
@@ -812,7 +852,7 @@
     const iAmount = find(/MONTANT|AMOUNT|SOMME|VALEUR EN EUR/);
     if (iDate < 0 || (iAmount < 0 && iDebit < 0 && iCredit < 0)) throw new Error("Colonnes Date / Montant introuvables.");
 
-    const ids = new Set(db.transactions.map(t => t.id));
+    const ids = new Set(db.transactions.map(t => t.id).concat(db.hidden)); // déjà là, ou supprimée exprès
     const seen = {};
     let added = 0, dup = 0, bad = 0, uncat = 0, lastDate = null;
     for (const r of rows.slice(h + 1)) {
@@ -858,14 +898,32 @@
   }
 
   // ================= Sauvegarde =================
-  function exportData() {
+  function lastBackup() { try { return localStorage.getItem("budget.lastBackup"); } catch (e) { return null; } }
+  async function exportData() {
+    const name = `budget-sauvegarde-${todayStr()}.json`;
     const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+    // Feuille de partage si possible ("Enregistrer dans Fichiers", Drive…) : dans une appli installée
+    // sur iPhone, le téléchargement direct d'un fichier marche mal. Sinon, téléchargement classique.
+    try {
+      const file = new File([blob], name, { type: "application/json" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: name });
+        return backupDone();
+      }
+    } catch (e) {
+      if (e.name === "AbortError") return; // partage annulé
+    }
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `budget-sauvegarde-${todayStr()}.json`;
+    a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    backupDone();
+  }
+  function backupDone() {
     try { localStorage.setItem("budget.lastBackup", todayStr()); } catch (e) {}
+    updateStorageInfo();
+    if (page === "pHome") renderHome();
     toast("Sauvegarde exportée");
   }
   function restoreData(text) {
@@ -874,7 +932,8 @@
     const valid = d.transactions.filter(t =>
       t && typeof t.id === "string" && (t.type === "income" || t.type === "expense") &&
       Number.isInteger(t.amount) && t.amount > 0 && typeof t.cat === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.date));
-    const ids = new Set(db.transactions.map(t => t.id));
+    if (Array.isArray(d.hidden)) for (const id of d.hidden) if (typeof id === "string" && !db.hidden.includes(id)) db.hidden.push(id);
+    const ids = new Set(db.transactions.map(t => t.id).concat(db.hidden));
     let added = 0;
     for (const t of valid) if (!ids.has(t.id)) {
       db.transactions.push({ id: t.id, type: t.type, amount: t.amount, cat: t.cat, date: t.date,
@@ -888,7 +947,7 @@
     return added;
   }
   function updateStorageInfo() {
-    let last = null; try { last = localStorage.getItem("budget.lastBackup"); } catch (e) {}
+    const last = lastBackup();
     $("storageInfo").textContent = `${db.transactions.length} opération(s) et ${db.rules.length} règle(s) de classement sur cet appareil. `
       + (last ? `Dernière sauvegarde exportée : ${last.split("-").reverse().join("/")}.` : "Aucune sauvegarde exportée pour l'instant.");
   }
@@ -911,7 +970,9 @@
   document.querySelectorAll("#fSeg button").forEach(b => b.onclick = () => setType(b.dataset.type));
   $("fCats").onclick = e => { const b = e.target.closest("button[data-cat]"); if (!b) return; form.cat = b.dataset.cat; renderCats(); };
   $("fDelete").onclick = () => arm($("fDelete"), "Supprimer", () => {
-    db.transactions = db.transactions.filter(t => t.id !== form.editId);
+    const t = db.transactions.find(x => x.id === form.editId);
+    if (t && t.src === "csv") db.hidden.push(t.id); // ne pas la recréer au prochain import du même relevé
+    db.transactions = db.transactions.filter(x => x.id !== form.editId);
     save(); closeForm(); render(); toast("Supprimé");
   });
   $("list").onclick = e => {
@@ -922,8 +983,8 @@
   $("chipAll").onclick = () => { newsMode = "all"; renderNews(); };
   $("chipRefresh").onclick = () => fetchNews(true);
 
-  $("btnSettings").onclick = () => { updateStorageInfo(); disarm($("btnWipe"), "Tout effacer"); $("setOverlay").classList.add("open"); };
-  $("setClose").onclick = () => $("setOverlay").classList.remove("open");
+  $("btnSettings").onclick = () => { updateStorageInfo(); disarm($("btnWipe"), "Tout effacer"); openSheet("setOverlay"); };
+  $("setClose").onclick = closeSheet;
   $("btnExport").onclick = exportData;
   $("btnImport").onclick = () => $("importFile").click();
   $("importFile").onchange = e => {
@@ -939,7 +1000,7 @@
     readFileSmart(f, txt => {
       try {
         const r = importBankCSV(txt);
-        $("setOverlay").classList.remove("open");
+        closeSheet();
         if (r.lastDate) { const [y, m] = r.lastDate.split("-").map(Number); view = { y, m: m - 1 }; }
         page = "pHome";
         document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("on", x.dataset.page === "pHome"));
@@ -952,7 +1013,16 @@
   $("btnWipe").onclick = () => arm($("btnWipe"), "Tout effacer", () => {
     db = blank(); save(); render(); updateStorageInfo(); toast("Tout a été effacé");
   });
-  document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e => { if (e.target === o) o.classList.remove("open"); }));
+  document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e => { if (e.target === o) closeSheet(); }));
+  // Retour dans l'appli après un moment : si la date a changé, on passe au nouveau mois quand on regardait le mois en cours
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return;
+    const prev = now; now = new Date();
+    if (prev.toDateString() === now.toDateString()) return;
+    if (view.y === prev.getFullYear() && view.m === prev.getMonth()) view = { y: now.getFullYear(), m: now.getMonth() };
+    render();
+    fetchNews(false);
+  });
 
   render();
   fetchNews(false); // en arrière-plan, pour avoir les actus en cache
