@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#0b0c10">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,145 +14,225 @@
 <title>Budget</title>
 <style>
   :root {
-    --bg: #0f172a; --card: #1e293b; --card2: #273449; --text: #e2e8f0; --muted: #94a3b8;
-    --line: #334155; --green: #34d399; --red: #f87171; --orange: #fbbf24; --accent: #60a5fa;
-    --radius: 16px; --nav: 64px;
+    --bg: #0b0c10; --surface: #15171d; --surface-2: #1d2028; --surface-3: #2a2e39;
+    --line: rgba(255,255,255,.07); --text: #f3f4f7; --muted: #8d93a3;
+    --accent: #8b8cff; --accent-ink: #0b0c10; --accent-soft: rgba(139,140,255,.15);
+    --green: #3fd99a; --red: #ff6b6b; --orange: #ffb547;
+    --green-soft: rgba(63,217,154,.13); --red-soft: rgba(255,107,107,.13); --orange-soft: rgba(255,181,71,.13);
+    --r-lg: 22px; --r-md: 16px; --r-sm: 12px; --nav: 64px;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  body { padding: env(safe-area-inset-top) 0 calc(var(--nav) + 90px + env(safe-area-inset-bottom)); }
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; }
+  body { padding: env(safe-area-inset-top) 0 calc(var(--nav) + 96px + env(safe-area-inset-bottom)); }
   main { max-width: 560px; margin: 0 auto; padding: 0 16px; }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 8px; }
-  header h1 { font-size: 20px; margin: 0; }
-  .iconbtn { background: var(--card); border: 0; color: var(--text); width: 40px; height: 40px;
-    border-radius: 12px; font-size: 18px; cursor: pointer; }
-  .monthnav { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 12px; }
-  .monthnav span { font-weight: 600; font-size: 17px; text-transform: capitalize; }
-  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .stat { background: var(--card); border-radius: var(--radius); padding: 14px; }
-  .stat.full { grid-column: 1 / -1; }
-  .stat small { color: var(--muted); font-size: 13px; }
-  .stat b { display: block; font-size: 22px; margin-top: 4px; font-variant-numeric: tabular-nums; }
-  .stat.full b { font-size: 28px; }
-  .stat.tap { cursor: pointer; }
-  .stat small.sub { display: block; font-size: 12px; margin-top: 4px; }
-  .savrow { display: grid; grid-template-columns: 1.3fr 1fr .75fr auto; gap: 6px; margin-bottom: 8px; align-items: center; }
-  .savrow input { padding: 10px 8px; min-width: 0; }
-  .savrow button { background: var(--bg); border: 1px solid var(--line); color: var(--muted); border-radius: 10px; width: 36px; height: 40px; font-size: 18px; cursor: pointer; }
+  button { font-family: inherit; }
+  svg { display: block; }
+  .num, b { font-variant-numeric: tabular-nums; }
+
+  /* En-tête et mois */
+  header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 10px; }
+  header h1 { font-size: 30px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
+  .iconbtn { background: var(--surface-2); border: 0; color: var(--text); width: 40px; height: 40px;
+    border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+  .monthnav { display: flex; align-items: center; justify-content: space-between; margin: 2px 0 14px;
+    background: var(--surface); border-radius: 999px; padding: 4px; }
+  .monthnav span { font-weight: 600; font-size: 15px; text-transform: capitalize; }
+  .navbtn { background: none; border: 0; color: var(--muted); width: 36px; height: 36px; border-radius: 50%;
+    display: grid; place-items: center; cursor: pointer; }
+  .navbtn:active, .iconbtn:active { background: var(--surface-3); }
+
+  /* Cartes */
+  section.card { background: var(--surface); border-radius: var(--r-lg); padding: 18px; margin-top: 12px; }
+  section.card h2 { font-size: 16px; margin: 0 0 14px; font-weight: 650; letter-spacing: -.01em; }
   .pos { color: var(--green); } .neg { color: var(--red); } .warn { color: var(--orange); }
-  section.card { background: var(--card); border-radius: var(--radius); padding: 14px; margin-top: 12px; }
-  section.card h2 { font-size: 15px; margin: 0 0 10px; color: var(--muted); font-weight: 600; }
-  .donutwrap { display: flex; gap: 14px; align-items: center; }
-  .legend { flex: 1; display: grid; gap: 6px; font-size: 13px; }
+  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 22px 0; line-height: 1.45; }
+
+  /* Ton argent */
+  .hero { display: block; border-radius: var(--r-lg); padding: 18px; cursor: pointer;
+    background: linear-gradient(150deg, #262857 0%, #1a1c2b 55%, #15171d 100%); border: 1px solid rgba(139,140,255,.18); }
+  .hero .top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 13px; font-weight: 500; }
+  .hero b { display: block; font-size: 36px; font-weight: 700; letter-spacing: -.025em; margin: 6px 0 8px; }
+  .hero b.cta { font-size: 22px; color: var(--accent); }
+  .hero small.sub { display: block; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+  /* Bilan du mois */
+  .summary small { color: var(--muted); font-size: 13px; font-weight: 500; }
+  .summary .head b { display: block; font-size: 30px; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .summary .head + .cols { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .cols > div { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .cols b { display: block; font-size: 17px; font-weight: 650; margin-top: 2px; white-space: nowrap; }
+  .pill { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+  .pill.up { background: var(--green-soft); color: var(--green); }
+  .pill.down { background: var(--red-soft); color: var(--red); }
+
+  /* Bandeaux */
+  .banner { display: flex; align-items: center; gap: 12px; background: var(--orange-soft); color: var(--text);
+    border-radius: var(--r-md); padding: 12px 12px 12px 14px; margin-top: 12px; font-size: 14px; font-weight: 500; }
+  .banner .ic { color: var(--orange); flex: none; }
+  .banner span { flex: 1; }
+  .banner button { background: var(--orange); color: #1b1305; border: 0; border-radius: 999px; padding: 8px 14px;
+    font-size: 13px; font-weight: 650; cursor: pointer; }
+
+  /* Analyses */
+  .insight { display: flex; gap: 12px; padding: 11px 0; align-items: flex-start; }
+  .insight + .insight { border-top: 1px solid var(--line); }
+  .insight .ic { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    background: var(--accent-soft); color: var(--accent); }
+  .insight.t-pos .ic { background: var(--green-soft); color: var(--green); }
+  .insight.t-neg .ic { background: var(--red-soft); color: var(--red); }
+  .insight.t-warn .ic { background: var(--orange-soft); color: var(--orange); }
+  .insight .t { font-size: 14.5px; line-height: 1.4; padding-top: 5px; }
+  .insight.t-pos .t b { color: var(--green); } .insight.t-neg .t b { color: var(--red); } .insight.t-warn .t b { color: var(--orange); }
+  .insight small { color: var(--muted); display: block; font-size: 13px; margin-top: 3px; line-height: 1.4; }
+
+  /* Graphiques */
+  .donutwrap { display: flex; gap: 18px; align-items: center; }
+  .donutwrap svg { flex: none; }
+  .legend { flex: 1; display: grid; gap: 8px; font-size: 13.5px; min-width: 0; }
   .legend div { display: flex; align-items: center; gap: 8px; }
-  .legend i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .legend i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .legend span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .legend em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 18px 0; line-height: 1.45; }
-  .day { color: var(--muted); font-size: 12px; margin: 12px 0 4px; text-transform: capitalize; }
-  .tx { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
-  .tx:last-child { border-bottom: 0; }
-  .tx .dot { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; flex: none; }
+  .keys { display: flex; gap: 16px; margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  .keys i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  svg text { fill: var(--muted); font-size: 11px; }
+
+  /* Opérations */
+  .day { color: var(--muted); font-size: 12.5px; font-weight: 600; margin: 16px 0 2px; }
+  .day:first-child { margin-top: 0; }
+  .tx { display: flex; align-items: center; gap: 12px; padding: 9px 0; cursor: pointer; }
+  .tx .dot { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; font-size: 19px; flex: none; }
   .tx .info { flex: 1; min-width: 0; }
-  .tx .info div { font-size: 15px; }
-  .tx .info small { color: var(--muted); font-size: 12px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tx .amt { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .tx .amt.muted { color: var(--muted); font-weight: 400; } /* entre tes comptes : ne compte pas */
-  .insight { display: flex; gap: 10px; padding: 8px 0; font-size: 14px; line-height: 1.4; border-bottom: 1px solid var(--line); }
-  .insight:last-child { border-bottom: 0; }
-  .insight > span:first-child { flex: none; width: 22px; text-align: center; }
-  .insight small { color: var(--muted); display: block; font-size: 12px; margin-top: 2px; }
-  .banner { display: flex; align-items: center; gap: 10px; background: #3b2f0b; color: var(--orange);
-    border-radius: 12px; padding: 10px 12px; margin-top: 12px; font-size: 14px; }
-  .banner span { flex: 1; }
-  .banner button { background: var(--orange); color: #1a1405; border: 0; border-radius: 10px; padding: 8px 12px; font-weight: 600; cursor: pointer; }
-  .bud { padding: 10px 0; border-bottom: 1px solid var(--line); }
-  .bud:last-child { border-bottom: 0; }
+  .tx .info .t { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tx .info small { color: var(--muted); font-size: 12.5px; display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tx .amt { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tx .amt.muted { color: var(--muted); font-weight: 500; } /* entre tes comptes : ne compte pas */
+  .tag { display: inline-block; background: var(--orange-soft); color: var(--orange); border-radius: 6px; padding: 1px 6px;
+    font-size: 11.5px; font-weight: 600; margin-left: 4px; vertical-align: 1px; }
+  .news .tag { background: var(--accent-soft); color: var(--accent); margin: 0 6px 0 0; }
+
+  /* Budgets */
+  .bud { padding: 12px 0; }
+  .bud + .bud { border-top: 1px solid var(--line); }
   .bud .top { display: flex; align-items: center; gap: 10px; }
-  .bud .top span { flex: 1; font-size: 15px; }
-  .bud .top input { width: 96px; padding: 8px; text-align: right; font-size: 16px; } /* < 16px : l'iPhone zoome au clic */
-  .bud .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 6px; }
-  .bar { height: 8px; background: var(--bg); border-radius: 6px; overflow: hidden; margin-top: 6px; }
-  .bar i { display: block; height: 100%; border-radius: 6px; }
-  .chips { display: flex; gap: 8px; margin: 0 0 10px; }
-  .chips button { background: var(--bg); border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 7px 12px; font-size: 13px; cursor: pointer; }
-  .chips button.on { color: var(--text); border-color: var(--accent); background: var(--card2); }
-  .news { display: block; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
-  .news:last-child { border-bottom: 0; }
-  .news b { font-size: 15px; font-weight: 600; line-height: 1.35; display: block; }
-  .news p { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
-  .news small { color: var(--muted); font-size: 12px; display: block; margin-top: 6px; }
-  .tag { display: inline-block; background: #12324a; color: var(--accent); border-radius: 6px; padding: 1px 6px; font-size: 11px; margin-right: 4px; }
-  .fab { position: fixed; right: 20px; bottom: calc(var(--nav) + 16px + env(safe-area-inset-bottom)); width: 60px; height: 60px;
-    border-radius: 50%; border: 0; background: var(--accent); color: #0b1220; font-size: 32px; line-height: 1;
-    box-shadow: 0 8px 24px rgba(0,0,0,.4); cursor: pointer; z-index: 5; }
-  nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: #0b1220; border-top: 1px solid var(--line);
-    display: flex; justify-content: center; padding-bottom: env(safe-area-inset-bottom); z-index: 6; }
+  .bud .top span { flex: 1; font-size: 15px; font-weight: 500; }
+  .bud .dot { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; font-size: 17px; flex: none; }
+  details.more { border-top: 1px solid var(--line); margin-top: 4px; }
+  details.more summary { list-style: none; cursor: pointer; color: var(--accent); font-size: 14px; font-weight: 600; padding: 14px 0 6px; }
+  details.more summary::-webkit-details-marker { display: none; }
+  .bud .top input { width: 104px; padding: 9px 12px; text-align: right; font-size: 16px; } /* < 16px : l'iPhone zoome au clic */
+  .bud .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12.5px; margin-top: 8px; }
+  .bar { height: 6px; background: var(--surface-3); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+  .bar i { display: block; height: 100%; border-radius: 3px; }
+
+  /* Actus */
+  .chips { display: flex; gap: 8px; margin: 0 0 6px; align-items: center; }
+  .chips button { background: var(--surface-2); border: 0; color: var(--muted); border-radius: 999px; padding: 8px 14px;
+    font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .chips button.on { color: var(--accent); background: var(--accent-soft); }
+  .chips .iconbtn { width: 36px; height: 36px; padding: 0; margin-left: auto; color: var(--muted); }
+  .news { display: block; padding: 14px 0; color: var(--text); text-decoration: none; }
+  .news + .news { border-top: 1px solid var(--line); }
+  .news b { font-size: 15.5px; font-weight: 600; line-height: 1.35; display: block; letter-spacing: -.005em; }
+  .news p { margin: 5px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .news small { color: var(--muted); font-size: 12px; display: block; margin-top: 8px; }
+
+  /* Bouton + et barre d'onglets */
+  .fab { position: fixed; right: max(20px, calc(50vw - 260px)); bottom: calc(var(--nav) + 18px + env(safe-area-inset-bottom));
+    width: 58px; height: 58px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink);
+    display: grid; place-items: center; box-shadow: 0 10px 30px rgba(139,140,255,.35), 0 2px 8px rgba(0,0,0,.4); cursor: pointer; z-index: 5; }
+  .fab:active { transform: scale(.96); }
+  nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: center;
+    background: rgba(13,14,18,.82); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
   nav.tabs div { display: flex; width: 100%; max-width: 560px; }
-  nav.tabs button { flex: 1; height: var(--nav); background: none; border: 0; color: var(--muted); font-size: 12px; cursor: pointer; display: grid; place-content: center; gap: 2px; }
-  nav.tabs button span { font-size: 20px; }
+  nav.tabs button { flex: 1; height: var(--nav); background: none; border: 0; color: var(--muted); font-size: 11.5px; font-weight: 600;
+    cursor: pointer; display: grid; place-content: center; justify-items: center; gap: 3px; }
   nav.tabs button.on { color: var(--accent); }
   .page { display: none; } .page.on { display: block; }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: flex-end; justify-content: center; z-index: 10; }
+
+  /* Fenêtres du bas */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: flex-end; justify-content: center; z-index: 10; }
   .overlay.open { display: flex; }
-  .sheet { background: var(--card); width: 100%; max-width: 560px; border-radius: 20px 20px 0 0;
-    padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); max-height: 92vh; overflow: auto; }
-  .sheet h3 { margin: 0 0 14px; font-size: 18px; }
-  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
-  .seg button { border: 0; background: transparent; color: var(--muted); padding: 10px; border-radius: 9px; font-size: 15px; cursor: pointer; }
-  .seg button.on { background: var(--card2); color: var(--text); font-weight: 600; }
-  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; }
-  input, select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--line);
-    border-radius: 12px; padding: 12px; font-size: 16px; font-family: inherit; }
-  input.big { font-size: 28px; font-weight: 600; text-align: center; }
+  .sheet { background: var(--surface); width: 100%; max-width: 560px; border-radius: 26px 26px 0 0;
+    padding: 10px 18px calc(20px + env(safe-area-inset-bottom)); max-height: 92vh; overflow: auto; animation: up .22s ease-out; }
+  .sheet::before { content: ""; display: block; width: 38px; height: 5px; border-radius: 3px; background: var(--surface-3); margin: 0 auto 16px; }
+  @keyframes up { from { transform: translateY(30px); opacity: .5; } to { transform: none; opacity: 1; } }
+  .sheet h3 { margin: 0 0 16px; font-size: 21px; font-weight: 700; letter-spacing: -.015em; }
+  .sheet h4 { margin: 22px 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border-radius: 13px; padding: 3px; margin-bottom: 12px; }
+  .seg button { border: 0; background: transparent; color: var(--muted); padding: 9px; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .seg button.on { background: var(--surface-3); color: var(--text); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin: 16px 0 8px; }
+  input, select { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid transparent;
+    border-radius: 14px; padding: 13px 14px; font-size: 16px; font-family: inherit; -webkit-appearance: none; appearance: none; }
+  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  input::placeholder { color: #5d6372; }
+  input[type=date] { min-height: 48px; }
+  input.big { font-size: 34px; font-weight: 700; text-align: center; padding: 14px; letter-spacing: -.02em; }
   .cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .cats button { background: var(--bg); border: 1px solid var(--line); color: var(--text); border-radius: 12px;
-    padding: 8px 2px; font-size: 11px; cursor: pointer; display: grid; gap: 2px; justify-items: center; }
-  .cats button span { font-size: 20px; }
-  .cats button.on { border-color: var(--accent); background: var(--card2); }
-  .row { display: flex; gap: 10px; margin-top: 14px; }
-  .btn { flex: 1; border: 0; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; }
-  .btn.primary { background: var(--accent); color: #0b1220; }
-  .btn.ghost { background: var(--bg); color: var(--text); }
-  .btn.danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
-  .btn.danger.armed { background: var(--red); color: #0b1220; }
-  .err { color: var(--red); font-size: 13px; min-height: 18px; margin-top: 6px; }
-  .note { color: var(--muted); font-size: 13px; line-height: 1.45; }
-  .banklabel { color: var(--muted); font-size: 12px; background: var(--bg); border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; word-break: break-word; }
-  .toast { position: fixed; left: 50%; bottom: calc(var(--nav) + 90px + env(safe-area-inset-bottom)); transform: translateX(-50%);
-    background: var(--card2); padding: 10px 16px; border-radius: 12px; font-size: 14px; opacity: 0; transition: opacity .2s;
-    pointer-events: none; z-index: 20; max-width: 90vw; text-align: center; }
+  .cats button { background: var(--surface-2); border: 1px solid transparent; color: #b8bcc8; border-radius: 14px;
+    padding: 10px 2px 8px; font-size: 12px; font-weight: 500; cursor: pointer; display: grid; gap: 4px; justify-items: center; line-height: 1.2; }
+  .cats button span { font-size: 22px; }
+  .cats button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+  .row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { flex: 1; border: 0; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); }
+  .btn.ghost { background: var(--surface-2); color: var(--text); }
+  .btn.danger { background: transparent; color: var(--red); box-shadow: inset 0 0 0 1px rgba(255,107,107,.35); }
+  .btn.danger.armed { background: var(--red); color: #1a0a0a; }
+  .btn:active { opacity: .85; }
+  button:focus-visible, .hero:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .err { color: var(--red); font-size: 13px; min-height: 18px; margin-top: 8px; }
+  .note { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 8px 0 0; }
+  .banklabel { color: var(--muted); font-size: 12.5px; background: var(--surface-2); border-radius: 12px; padding: 9px 12px; margin-bottom: 12px; word-break: break-word; }
+  .link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .savrow { display: grid; grid-template-columns: 1.3fr 1fr .75fr auto; gap: 6px; margin-bottom: 8px; align-items: center; }
+  .savrow input { padding: 11px 10px; min-width: 0; }
+  .savrow button { background: var(--surface-2); border: 0; color: var(--muted); border-radius: 12px; width: 40px; height: 44px; font-size: 18px; cursor: pointer; }
+  .report div { padding: 10px 0; font-size: 14px; line-height: 1.45; word-break: break-word; }
+  .report div + div { border-top: 1px solid var(--line); }
+  textarea.diag { width: 100%; height: 40vh; background: var(--surface-2); color: var(--text); border: 0; border-radius: 14px;
+    padding: 12px; font: 11px/1.4 ui-monospace, Menlo, monospace; white-space: pre; margin-top: 10px; }
+  .version { text-align: center; color: #5d6372; font-size: 12px; margin-top: 14px; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(var(--nav) + 92px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    background: rgba(42,46,57,.94); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); padding: 11px 18px; border-radius: 999px;
+    font-size: 14px; font-weight: 500; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; max-width: 90vw; text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4); }
   .toast.show { opacity: 1; }
-  svg text { fill: var(--muted); font-size: 10px; }
-  .link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 13px; text-decoration: underline; cursor: pointer; }
-  .report div { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.45; word-break: break-word; }
-  .report div:last-child { border-bottom: 0; }
-  textarea.diag { width: 100%; height: 40vh; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 12px;
-    padding: 10px; font: 11px/1.4 ui-monospace, Menlo, monospace; white-space: pre; margin-top: 10px; }
 </style>
 </head>
 <body>
 <main>
   <header>
     <h1 id="pageTitle">Budget</h1>
-    <button class="iconbtn" id="btnSettings" aria-label="Réglages">⚙︎</button>
+    <button class="iconbtn" id="btnSettings" aria-label="Réglages"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button>
   </header>
 
   <div class="monthnav" id="monthNav">
-    <button class="iconbtn" id="prevMonth" aria-label="Mois précédent">‹</button>
+    <button class="navbtn" id="prevMonth" aria-label="Mois précédent"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
     <span id="monthLabel"></span>
-    <button class="iconbtn" id="nextMonth" aria-label="Mois suivant">›</button>
+    <button class="navbtn" id="nextMonth" aria-label="Mois suivant"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
   </div>
 
   <!-- ===== Accueil ===== -->
   <div class="page on" id="pHome">
-    <div class="stats">
-      <div class="stat full tap" id="accStat" role="button" tabindex="0"><small id="accLabel">Ton argent</small><b id="accValue"></b><small class="sub" id="accSav"></small><small class="sub" id="accSub"></small></div>
-      <div class="stat full"><small>Bilan du mois</small><b id="sBalance">0 €</b></div>
-      <div class="stat"><small>Revenus</small><b class="pos" id="sIncome">0 €</b></div>
-      <div class="stat"><small>Dépenses</small><b class="neg" id="sExpense">0 €</b></div>
-    </div>
+    <section class="hero" id="accStat" role="button" tabindex="0">
+      <div class="top"><span id="accLabel">Ton argent</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></div>
+      <b id="accValue"></b><small class="sub" id="accSav"></small><small class="sub" id="accSub"></small>
+    </section>
+    <section class="card summary">
+      <div class="head"><small>Bilan du mois</small><b id="sBalance">0 €</b></div>
+      <div class="cols">
+        <div><span class="pill up"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></span><div><small>Revenus</small><b id="sIncome">0 €</b></div></div>
+        <div><span class="pill down"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span><div><small>Dépenses</small><b id="sExpense">0 €</b></div></div>
+      </div>
+    </section>
     <div id="uncatBanner"></div>
     <div id="backupBanner"></div>
     <section class="card"><h2>Analyse du mois</h2><div id="insights"></div></section>
@@ -163,10 +243,12 @@
 
   <!-- ===== Budgets ===== -->
   <div class="page" id="pBudgets">
-    <div class="stats">
-      <div class="stat"><small>Budget total</small><b id="bTotal">0 €</b></div>
-      <div class="stat"><small>Dépensé</small><b id="bSpent">0 €</b></div>
-    </div>
+    <section class="card summary" style="margin-top:0">
+      <div class="cols">
+        <div><div><small>Budget total</small><b id="bTotal">0 €</b></div></div>
+        <div><div><small>Dépensé</small><b id="bSpent">0 €</b></div></div>
+      </div>
+    </section>
     <section class="card">
       <h2>Budget par mois</h2>
       <div id="budgetList"></div>
@@ -175,11 +257,11 @@
 
   <!-- ===== Actus ===== -->
   <div class="page" id="pNews">
-    <section class="card">
+    <section class="card" style="margin-top:0">
       <div class="chips">
         <button id="chipMine" class="on">Pour toi</button>
         <button id="chipAll">Tout</button>
-        <button id="chipRefresh" style="margin-left:auto">↻</button>
+        <button class="iconbtn" id="chipRefresh" aria-label="Actualiser"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg></button>
       </div>
       <div class="note" id="newsMeta"></div>
       <div id="newsList"></div>
@@ -187,12 +269,12 @@
   </div>
 </main>
 
-<button class="fab" id="btnAdd" aria-label="Ajouter">+</button>
+<button class="fab" id="btnAdd" aria-label="Ajouter une opération"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 
 <nav class="tabs"><div>
-  <button data-page="pHome" class="on"><span>🏠</span>Accueil</button>
-  <button data-page="pBudgets"><span>🎯</span>Budgets</button>
-  <button data-page="pNews"><span>📰</span>Actus</button>
+  <button data-page="pHome" class="on"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg>Accueil</button>
+  <button data-page="pBudgets"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>Budgets</button>
+  <button data-page="pNews"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h11a1 1 0 0 1 1 1v13a1 1 0 0 0 1 1H6a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1z"/><path d="M17 9h2a1 1 0 0 1 1 1v8a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5M8 17h3"/></svg>Actus</button>
 </div></nav>
 
 <!-- Ajout / modification -->
@@ -204,7 +286,7 @@
       <button type="button" data-type="expense" class="on">Dépense</button>
       <button type="button" data-type="income">Revenu</button>
     </div>
-    <input class="big" id="fAmount" inputmode="decimal" placeholder="0,00 €" autocomplete="off">
+    <input class="big" id="fAmount" inputmode="decimal" placeholder="0,00 €" autocomplete="off" aria-label="Montant">
     <label>Catégorie</label>
     <div class="cats" id="fCats"></div>
     <label for="fDate">Date</label>
@@ -231,7 +313,7 @@
       <button type="button" data-sign="1" class="on">Positif</button>
       <button type="button" data-sign="-1">Négatif</button>
     </div>
-    <input class="big" id="balAmount" inputmode="decimal" placeholder="0,00 €" autocomplete="off">
+    <input class="big" id="balAmount" inputmode="decimal" placeholder="0,00 €" autocomplete="off" aria-label="Ton argent en tout">
     <label for="balDate">Date</label>
     <input type="date" id="balDate">
     <label>Dont livrets (pour les intérêts)</label>
@@ -252,23 +334,22 @@
 <div class="overlay" id="setOverlay">
   <div class="sheet">
     <h3>Réglages</h3>
-    <p class="note" style="margin-top:0">Tes données restent sur ce téléphone.</p>
-    <label>Relevés</label>
+    <p class="note" style="margin:-8px 0 18px">Tes données restent sur ce téléphone.</p>
+    <h4 style="margin-top:0">Relevés</h4>
     <div class="row" style="margin-top:0"><button class="btn primary" id="btnCsv">Importer des relevés (PDF ou CSV)</button></div>
     <input type="file" id="csvFile" accept=".csv,.pdf,text/csv,text/plain,application/pdf" multiple style="display:none">
     <p class="note">Plusieurs fichiers possibles, doublons ignorés. <button class="link" id="btnDiag">PDF mal lu ?</button></p>
     <input type="file" id="diagFile" accept=".pdf,application/pdf" style="display:none">
-    <label for="ownName">Ton nom</label>
-    <input id="ownName" placeholder="Prénom Nom" autocomplete="name" maxlength="60">
+    <h4>Ton nom</h4>
+    <input id="ownName" placeholder="Prénom Nom" autocomplete="name" maxlength="60" aria-label="Ton nom">
     <p class="note">Les virements à ton nom (vers Revolut…) vont dans « Mes comptes » et ne comptent pas.</p>
-    <label>Sauvegarde</label>
-    <div class="row" style="margin-top:0"><button class="btn ghost" id="btnExport">Exporter une sauvegarde</button></div>
-    <div class="row"><button class="btn ghost" id="btnImport">Restaurer une sauvegarde</button></div>
+    <h4>Sauvegarde</h4>
+    <div class="row" style="margin-top:0"><button class="btn ghost" id="btnExport">Exporter</button><button class="btn ghost" id="btnImport">Restaurer</button></div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
     <p class="note" id="storageInfo"></p>
     <div class="row"><button class="btn danger" id="btnWipe">Tout effacer</button></div>
     <div class="row"><button class="btn ghost" id="setClose">Fermer</button></div>
-    <p class="note" style="text-align:center" id="appVersion"></p>
+    <p class="version" id="appVersion"></p>
   </div>
 </div>
 
@@ -289,7 +370,7 @@
 <script>
 (() => {
   "use strict";
-  const APP_VERSION = "13 (29/10)"; // à changer avec VERSION dans sw.js à chaque mise à jour
+  const APP_VERSION = "15 (29/10)"; // à changer avec VERSION dans sw.js à chaque mise à jour
 
   // ================= Catégories =================
   const CATS = {
@@ -308,7 +389,7 @@
       { id: "virements", label: "Virements", icon: "💸", color: "#38bdf8" },
       { id: "especes", label: "Espèces", icon: "💶", color: "#a3e635" },
       { id: "interne", label: "Mes comptes", icon: "🔄", color: "#64748b" },
-      { id: "autre_d", label: "Autre", icon: "•", color: "#94a3b8" }
+      { id: "autre_d", label: "Autre", icon: "🧾", color: "#94a3b8" }
     ],
     income: [
       { id: "salaire", label: "Salaire", icon: "💼", color: "#34d399" },
@@ -319,7 +400,7 @@
       { id: "vir_recu", label: "Virements reçus", icon: "📥", color: "#38bdf8" },
       { id: "epargne_r", label: "Depuis l'épargne", icon: "🏦", color: "#2dd4bf" },
       { id: "interne", label: "Mes comptes", icon: "🔄", color: "#64748b" },
-      { id: "autre_r", label: "Autre", icon: "•", color: "#94a3b8" }
+      { id: "autre_r", label: "Autre", icon: "🧾", color: "#94a3b8" }
     ]
   };
   const ALLCATS = CATS.expense.concat(CATS.income);
@@ -626,6 +707,44 @@
     return out;
   }
 
+  // ================= Icônes et libellés =================
+  const ic = (paths, size = 20) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+  const I = {
+    calendar: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+    alert: '<path d="M12 4 3 19h18z"/><path d="M12 10v4M12 16.5v.5"/>',
+    up: '<path d="M4 16l5-5 4 4 7-7"/><path d="M15 8h5v5"/>',
+    down: '<path d="M4 8l5 5 4-4 7 7"/><path d="M15 16h5v-5"/>',
+    repeat: '<path d="M17 3l3 3-3 3"/><path d="M4 11V9a3 3 0 0 1 3-3h13"/><path d="M7 21l-3-3 3-3"/><path d="M20 13v2a3 3 0 0 1-3 3H4"/>',
+    check: '<circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+    inbox: '<path d="M3 13h5l1.5 2h5L16 13h5"/><path d="M5.5 5h13l2.5 8v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5z"/>',
+    save: '<path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 19h14"/>'
+  };
+  const INSIGHT_ICON = { "🔮": I.calendar, "🚨": I.alert, "⚠️": I.alert, "📈": I.up, "🔁": I.repeat, "💰": I.check, "📉": I.down };
+  // Libellé bancaire lisible : "CB CARREFOUR MARKET 09/10" -> "Carrefour Market", "Vir Inst vers Malvin Fontenit" -> "Vers Malvin Fontenit"
+  const LABEL_NOISE = new Set("CB CARTE PAIEMENT PAIEM ACHAT PRLV PRELEVEMENT PRELEV SEPA VIR VIRT VIREMENT INST INSTANTANE WEB EMIS RECU FACT FACTURE ECH REF MANDAT".split(" "));
+  const SMALL_WORDS = new Set("DE DU DES LA LE LES ET AU AUX EN SUR VERS D L".split(" "));
+  function prettyLabel(label) {
+    const words = String(label || "").split(/\s+/).map(w => w.replace(/\*+\d*\**$/, "").replace(/^\*+/, "")).filter(w => {
+      const u = w.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return w && !LABEL_NOISE.has(u) && !/^X\d{3,}$/.test(u) && !/^\d{6,}$/.test(u) && !/^\d{1,2}[\/.]\d{1,2}([\/.]\d{2,4})?$/.test(u);
+    });
+    const out = words.map((w, i) => {
+      if (w !== w.toUpperCase() || !/[A-Z]/.test(w)) return w; // déjà en minuscules/majuscules mélangées
+      if (i > 0 && SMALL_WORDS.has(w)) return w.toLowerCase();
+      if (w.length <= 3 && !SMALL_WORDS.has(w)) return w; // sigles : KFC, EDF, CAF
+      return w.charAt(0) + w.slice(1).toLowerCase();
+    }).join(" ");
+    return out ? out.charAt(0).toUpperCase() + out.slice(1) : String(label || "");
+  }
+  function dayLabel(iso) {
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    if (iso === todayStr()) return "Aujourd'hui";
+    if (iso === `${y.getFullYear()}-${pad(y.getMonth() + 1)}-${pad(y.getDate())}`) return "Hier";
+    const [yy, m, d] = iso.split("-").map(Number);
+    const s = new Date(yy, m - 1, d).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
   // ================= Rendu =================
   function render() {
     $("monthLabel").textContent = new Date(view.y, view.m, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
@@ -725,7 +844,7 @@
       // Pas encore de solde : on le propose seulement sur le mois en cours
       card.style.display = isCur ? "block" : "none";
       $("accLabel").textContent = "Ton argent";
-      $("accValue").textContent = "Indiquer"; $("accValue").className = "";
+      $("accValue").textContent = "Ajouter"; $("accValue").className = "cta";
       $("accSub").textContent = "Compte + épargne";
       $("accSav").style.display = "none";
       return;
@@ -798,7 +917,7 @@
 
     const uncat = db.transactions.filter(x => isUncat(x.cat) && x.src === "csv").length;
     $("uncatBanner").innerHTML = uncat
-      ? `<div class="banner"><span>${uncat} opération(s) importée(s) à classer</span><button id="btnUncat">${showUncatOnly ? "Tout voir" : "Classer"}</button></div>` : "";
+      ? `<div class="banner"><span class="ic">${ic(I.inbox)}</span><span>${uncat} opération(s) à classer</span><button id="btnUncat">${showUncatOnly ? "Tout voir" : "Classer"}</button></div>` : "";
     if (!uncat) showUncatOnly = false;
     const bu = $("btnUncat"); if (bu) bu.onclick = () => { showUncatOnly = !showUncatOnly; renderHome(); if (showUncatOnly) $("listTitle").scrollIntoView({ behavior: "smooth" }); };
 
@@ -806,12 +925,12 @@
     const last = lastBackup();
     const age = last ? Math.floor((new Date(todayStr()) - new Date(last)) / 864e5) : null;
     $("backupBanner").innerHTML = db.transactions.length >= 10 && (age === null || age > 30)
-      ? `<div class="banner"><span>${age === null ? "Pas encore de sauvegarde" : `Dernière sauvegarde il y a ${age} jours`}</span><button id="btnBackupNow">Sauvegarder</button></div>` : "";
+      ? `<div class="banner"><span class="ic">${ic(I.save)}</span><span>${age === null ? "Pas encore de sauvegarde" : `Dernière sauvegarde il y a ${age} jours`}</span><button id="btnBackupNow">Sauvegarder</button></div>` : "";
     const bb = $("btnBackupNow"); if (bb) bb.onclick = exportData;
 
     const ins = computeInsights();
     $("insights").innerHTML = ins.length
-      ? ins.map(i => `<div class="insight"><span>${i.icon}</span><div><span class="${i.cls}">${i.text}</span>${i.sub ? `<small>${i.sub}</small>` : ""}</div></div>`).join("")
+      ? ins.map(i => `<div class="insight t-${i.cls || "info"}"><span class="ic">${ic(INSIGHT_ICON[i.icon] || I.check, 17)}</span><div><div class="t">${i.text}</div>${i.sub ? `<small>${i.sub}</small>` : ""}</div></div>`).join("")
       : '<div class="empty">Pas encore d\'analyse.</div>';
 
     renderDonut(list);
@@ -830,21 +949,23 @@
     const entries = Object.entries(spentByCat(list)).sort((a, b) => b[1] - a[1]);
     const total = entries.reduce((s, e) => s + e[1], 0);
     if (!total) { el.innerHTML = '<div class="empty">Aucune dépense</div>'; return; }
-    const R = 54, C = 2 * Math.PI * R;
-    let off = 0, arcs = "";
+    const R = 50, C = 2 * Math.PI * R, gap = entries.length > 1 ? 2.5 : 0;
+    let off = 0, arcs = `<circle r="${R}" cx="64" cy="64" fill="none" stroke="var(--surface-2)" stroke-width="14"/>`;
     for (const [cat, v] of entries) {
-      const len = (v / total) * C;
-      arcs += `<circle r="${R}" cx="70" cy="70" fill="none" stroke="${catById(cat).color}" stroke-width="22"
-        stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"/>`;
+      const len = (v / total) * C, seg = Math.max(.5, len - gap);
+      arcs += `<circle r="${R}" cx="64" cy="64" fill="none" stroke="${catById(cat).color}" stroke-width="14"
+        stroke-dasharray="${seg} ${C - seg}" stroke-dashoffset="${-off}" transform="rotate(-90 64 64)"/>`;
       off += len;
     }
-    const legend = entries.map(([cat, v]) => {
-      const c = catById(cat);
-      return `<div><i style="background:${c.color}"></i><span>${c.icon} ${esc(c.label)}</span><em>${Math.round(v / total * 100)} %</em></div>`;
-    }).join("");
-    el.innerHTML = `<div class="donutwrap"><svg width="140" height="140" viewBox="0 0 140 140">${arcs}
-      <text x="70" y="66" text-anchor="middle" style="font-size:11px">Total</text>
-      <text x="70" y="84" text-anchor="middle" style="font-size:15px;fill:var(--text);font-weight:600">${fmtShort(total)} €</text>
+    // Légende : les 5 plus grosses catégories, le reste regroupé
+    const shown = entries.length > 6 ? entries.slice(0, 5) : entries;
+    const rest = entries.slice(shown.length).reduce((s, e) => s + e[1], 0);
+    const pct = v => Math.max(1, Math.round(v / total * 100)) + " %";
+    const legend = shown.map(([cat, v]) => { const c = catById(cat); return `<div><i style="background:${c.color}"></i><span>${esc(c.label)}</span><em>${pct(v)}</em></div>`; }).join("")
+      + (rest ? `<div><i style="background:var(--surface-3)"></i><span>Autres</span><em>${pct(rest)}</em></div>` : "");
+    el.innerHTML = `<div class="donutwrap"><svg width="128" height="128" viewBox="0 0 128 128">${arcs}
+      <text x="64" y="60" text-anchor="middle" style="font-size:11px">Total</text>
+      <text x="64" y="79" text-anchor="middle" style="font-size:17px;fill:var(--text);font-weight:700">${fmtShort(total)} €</text>
       </svg><div class="legend">${legend}</div></div>`;
   }
 
@@ -852,42 +973,35 @@
     const months = [];
     for (let i = 5; i >= 0; i--) { const s = shiftMonth(view.y, view.m, -i); months.push({ ...s, ...totals(txOfMonth(s.y, s.m)) }); }
     const max = Math.max(1, ...months.map(x => Math.max(x.inc, x.exp)));
-    const W = 320, H = 150, top = 14, base = 120, gw = W / 6, bw = 14;
+    const W = 320, H = 148, top = 8, base = 112, gw = W / 6, bw = 12;
     let g = "";
     months.forEach((mo, i) => {
-      const x = i * gw + gw / 2;
-      const hi = (mo.inc / max) * (base - top), he = (mo.exp / max) * (base - top);
+      const x = i * gw + gw / 2, cur = i === 5, op = cur ? 1 : .4;
+      const hi = Math.max(mo.inc ? 3 : 0, (mo.inc / max) * (base - top)), he = Math.max(mo.exp ? 3 : 0, (mo.exp / max) * (base - top));
       const lbl = new Date(mo.y, mo.m, 1).toLocaleDateString("fr-FR", { month: "short" }).replace(".", "");
-      const cur = i === 5;
-      g += `<rect x="${x - bw - 1}" y="${base - hi}" width="${bw}" height="${hi}" rx="3" fill="var(--green)" opacity="${cur ? 1 : .6}"/>
-            <rect x="${x + 1}" y="${base - he}" width="${bw}" height="${he}" rx="3" fill="var(--red)" opacity="${cur ? 1 : .6}"/>
-            <text x="${x}" y="${base + 14}" text-anchor="middle" ${cur ? 'style="fill:var(--text);font-weight:600"' : ""}>${lbl}</text>
-            <text x="${x}" y="${base + 27}" text-anchor="middle" style="fill:${mo.bal >= 0 ? "var(--green)" : "var(--red)"}">${mo.inc || mo.exp ? (mo.bal >= 0 ? "+" : "-") + fmtShort(mo.bal) : ""}</text>`;
+      g += `<rect x="${x - bw - 1.5}" y="${base - hi}" width="${bw}" height="${hi}" rx="4" fill="var(--green)" opacity="${op}"/>
+            <rect x="${x + 1.5}" y="${base - he}" width="${bw}" height="${he}" rx="4" fill="var(--red)" opacity="${op}"/>
+            <text x="${x}" y="${base + 17}" text-anchor="middle" ${cur ? 'style="fill:var(--text);font-weight:600"' : ""}>${lbl}</text>
+            <text x="${x}" y="${base + 32}" text-anchor="middle" style="font-size:11px;fill:${mo.bal >= 0 ? "var(--green)" : "var(--red)"};opacity:${cur ? 1 : .7}">${mo.inc || mo.exp ? (mo.bal >= 0 ? "+" : "-") + fmtShort(mo.bal) : ""}</text>`;
     });
-    $("bars").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">
-      <line x1="0" x2="${W}" y1="${base}" y2="${base}" stroke="var(--line)"/>${g}</svg>
-      <div class="legend" style="grid-template-columns:auto auto;justify-content:start;gap:16px;margin-top:4px">
-      <div><i style="background:var(--green)"></i>Revenus</div><div><i style="background:var(--red)"></i>Dépenses</div></div>`;
+    $("bars").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%"><line x1="0" x2="${W}" y1="${base + .5}" y2="${base + .5}" stroke="var(--line)"/>${g}</svg>
+      <div class="keys"><span><i style="background:var(--green)"></i>Revenus</span><span><i style="background:var(--red)"></i>Dépenses</span></div>`;
   }
 
   function renderList(list) {
     const el = $("list");
-    if (!list.length) { el.innerHTML = '<div class="empty">Aucune opération. + pour ajouter, ⚙︎ pour importer.</div>'; return; }
+    if (!list.length) { el.innerHTML = '<div class="empty">Aucune opération.<br>Touche + pour en ajouter, ou importe un relevé dans les réglages.</div>'; return; }
     const sorted = [...list].sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0));
     let html = "", lastDay = "";
     for (const t of sorted) {
-      if (t.date !== lastDay) {
-        lastDay = t.date;
-        const [y, m, d] = t.date.split("-").map(Number);
-        html += `<div class="day">${new Date(y, m - 1, d).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</div>`;
-      }
+      if (t.date !== lastDay) { lastDay = t.date; html += `<div class="day">${dayLabel(t.date)}</div>`; }
       const c = catById(t.cat);
-      const inc = t.type === "income";
-      const own = t.cat === "interne";
-      const sub = t.note || t.label || "";
+      const inc = t.type === "income", own = t.cat === "interne";
+      const title = t.note || (t.label ? prettyLabel(t.label) : c.label);
+      const tag = isUncat(t.cat) && t.src === "csv" ? '<span class="tag">à classer</span>' : "";
       html += `<div class="tx" data-id="${esc(t.id)}">
-        <div class="dot" style="background:${c.color}22">${c.icon}</div>
-        <div class="info"><div>${esc(c.label)}${isUncat(t.cat) && t.src === "csv" ? ' <span class="tag">à classer</span>' : ""}</div>${sub ? `<small>${esc(sub)}</small>` : ""}</div>
+        <div class="dot" style="background:${c.color}24">${c.icon}</div>
+        <div class="info"><div class="t">${esc(title)}</div><small>${esc(c.label)}${tag}</small></div>
         <div class="amt ${own ? "muted" : inc ? "pos" : ""}">${own ? "⇄ " : inc ? "+" : "-"}${fmt(t.amount)}</div></div>`;
     }
     el.innerHTML = html;
@@ -895,21 +1009,26 @@
 
   function renderBudgets() {
     const spent = spentByCat(txOfMonth(view.y, view.m));
-    let tot = 0, totSpent = 0, html = "";
-    for (const c of CATS.expense) {
-      const b = db.budgets[c.id] || 0, s = spent[c.id] || 0;
-      if (b) { tot += b; totSpent += s; }
-      const r = b ? s / b : 0;
-      const color = !b ? "var(--line)" : r >= 1 ? "var(--red)" : r >= 0.8 ? "var(--orange)" : "var(--green)";
-      html += `<div class="bud">
-        <div class="top"><span>${c.icon} ${esc(c.label)}</span>
-          <input inputmode="decimal" data-bud="${c.id}" placeholder="—" value="${b ? (b / 100).toString().replace(".", ",") : ""}" aria-label="Budget ${esc(c.label)}"></div>
+    const cats = CATS.expense.filter(c => c.id !== "interne"); // "Mes comptes" ne compte jamais
+    const row = c => {
+      const b = db.budgets[c.id] || 0, s = spent[c.id] || 0, r = b ? s / b : 0;
+      const color = r >= 1 ? "var(--red)" : r >= 0.8 ? "var(--orange)" : "var(--green)";
+      return `<div class="bud">
+        <div class="top"><div class="dot" style="background:${c.color}24">${c.icon}</div><span>${esc(c.label)}</span>
+          <input inputmode="decimal" data-bud="${c.id}" placeholder="Budget" value="${b ? (b / 100).toString().replace(".", ",") : ""}" aria-label="Budget ${esc(c.label)}"></div>
         ${b ? `<div class="bar"><i style="width:${Math.min(100, r * 100)}%;background:${color}"></i></div>
         <div class="meta"><span>${fmt0(s)} dépensés</span><span class="${r >= 1 ? "neg" : r >= .8 ? "warn" : ""}">${r >= 1 ? "Dépassé de " + fmt0(s - b) : "Reste " + fmt0(b - s)}</span></div>`
-        : s ? `<div class="meta"><span>${fmt0(s)} dépensés, pas de budget</span></div>` : ""}
+        : s ? `<div class="meta"><span>${fmt0(s)} dépensés ce mois</span></div>` : ""}
       </div>`;
-    }
-    $("budgetList").innerHTML = html;
+    };
+    // D'abord les catégories avec un budget, puis celles où tu as dépensé ; le reste est replié
+    const main = cats.filter(c => db.budgets[c.id] || spent[c.id])
+      .sort((a, b) => (!!db.budgets[b.id] - !!db.budgets[a.id]) || (spent[b.id] || 0) - (spent[a.id] || 0));
+    const others = cats.filter(c => !main.includes(c));
+    $("budgetList").innerHTML = (main.map(row).join("") || '<div class="empty">Aucune dépense ce mois.</div>')
+      + (others.length ? `<details class="more"${main.length ? "" : " open"}><summary>Autres catégories (${others.length})</summary>${others.map(row).join("")}</details>` : "");
+    let tot = 0, totSpent = 0;
+    for (const c of cats) if (db.budgets[c.id]) { tot += db.budgets[c.id]; totSpent += spent[c.id] || 0; }
     $("bTotal").textContent = fmt0(tot);
     $("bSpent").textContent = fmt0(totSpent);
     $("bSpent").className = tot && totSpent > tot ? "neg" : "";
@@ -920,6 +1039,7 @@
       save(); renderBudgets();
     }));
   }
+
 
   // ================= Actualités =================
   let newsMode = "mine";
