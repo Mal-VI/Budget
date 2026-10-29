@@ -28,7 +28,10 @@
   html, body { margin: 0; background: var(--bg); color: var(--label);
     font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; }
-  body { padding: env(safe-area-inset-top) 0 calc(var(--tab) + 40px + env(safe-area-inset-bottom)); }
+  body { padding: env(safe-area-inset-top) 0 calc(110px + env(safe-area-inset-bottom)); }
+  /* Sous la barre d'état : flou, pour que le contenu qui défile reste propre */
+  body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); z-index: 5;
+    background: rgba(0,0,0,.55); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
   main { max-width: 600px; margin: 0 auto; padding: 0 16px; }
   button { font-family: inherit; color: inherit; cursor: pointer; }
   svg { display: block; flex: none; }
@@ -44,12 +47,12 @@
   .hbtns { display: flex; gap: 10px; padding-bottom: 3px; }
   .circle { width: 36px; height: 36px; border-radius: 50%; border: 0; display: grid; place-items: center; background: var(--fill); color: var(--blue); }
   .circle.accent { background: var(--blue); color: #fff; }
-  .circle:active { opacity: .7; }
-  .monthnav { display: flex; align-items: center; justify-content: space-between; background: var(--card); border-radius: 12px;
-    height: 44px; padding: 0 2px; margin: 10px 0 16px; }
+  .monthnav { display: flex; align-items: center; justify-content: space-between; border-radius: 999px; height: 46px; padding: 0 3px; margin: 10px 0 16px;
+    position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 4; }
   .monthnav span { font-size: 17px; font-weight: 600; text-transform: capitalize; }
-  .navbtn { width: 44px; height: 44px; background: none; border: 0; color: var(--blue); display: grid; place-items: center; border-radius: 12px; }
-  .navbtn:active { background: var(--fill-2); }
+  .navbtn { width: 40px; height: 40px; background: none; border: 0; color: var(--blue); display: grid; place-items: center; border-radius: 50%;
+    transition: transform .35s cubic-bezier(.3,1.5,.5,1); }
+  .navbtn:active { transform: scale(.85); }
 
   /* Cartes et titres de section */
   .card { background: var(--card); border-radius: 14px; overflow: hidden; }
@@ -161,16 +164,29 @@
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .news small { color: var(--label-2); font-size: 12px; display: block; margin-top: 7px; }
 
-  /* Barre d'onglets */
-  nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: center;
-    background: rgba(22,22,24,.82); -webkit-backdrop-filter: saturate(180%) blur(24px); backdrop-filter: saturate(180%) blur(24px);
-    box-shadow: 0 -.5px 0 var(--sep); padding-bottom: env(safe-area-inset-bottom); }
-  nav.tabs div { display: flex; width: 100%; max-width: 600px; }
-  nav.tabs button { flex: 1; height: var(--tab); background: none; border: 0; color: var(--gray); font-size: 11px; font-weight: 500;
-    display: grid; place-content: center; justify-items: center; gap: 2px; padding-top: 3px; }
+  /* Verre (façon iOS 26) : flou + reflets sur les bords. La vraie réfraction "liquide" d'Apple n'existe pas dans Safari. */
+  .glass { background: rgba(40,40,46,.5); -webkit-backdrop-filter: blur(22px) saturate(190%); backdrop-filter: blur(22px) saturate(190%);
+    box-shadow: 0 12px 34px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(255,255,255,.05), inset 0 0 18px rgba(255,255,255,.04); }
+  .glass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+    background: linear-gradient(150deg, rgba(255,255,255,.42), rgba(255,255,255,.08) 35%, rgba(255,255,255,0) 55%, rgba(255,255,255,.14) 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+
+  /* Barre d'onglets flottante + bouton ajouter */
+  nav.tabs { position: fixed; left: 0; right: 0; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 6; display: flex; justify-content: center;
+    gap: 10px; padding: 0 18px; pointer-events: none; }
+  .tabbar { position: relative; pointer-events: auto; display: flex; flex: 1; max-width: 440px; height: 62px; padding: 4px; border-radius: 999px; }
+  .tab-pill { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 999px; background: rgba(255,255,255,.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transition: transform .5s cubic-bezier(.3,1.35,.45,1), width .5s cubic-bezier(.3,1.35,.45,1); }
+  nav.tabs button[data-page] { position: relative; z-index: 1; flex: 1; border-radius: 999px; background: none; border: 0; color: rgba(235,235,245,.72);
+    font-size: 11px; font-weight: 600; display: grid; place-content: center; justify-items: center; gap: 2px;
+    transition: transform .35s cubic-bezier(.3,1.5,.5,1), color .2s; }
+  nav.tabs button[data-page]:active, .fab:active, .circle:active { transform: scale(.92); }
   nav.tabs button .f, nav.tabs button.on .r { display: none; }
   nav.tabs button.on .f { display: block; }
   nav.tabs button.on { color: var(--blue); }
+  .fab { position: relative; pointer-events: auto; flex: none; width: 62px; height: 62px; border-radius: 50%; border: 0; color: #fff; display: grid; place-items: center;
+    background: rgba(10,132,255,.72); transition: transform .35s cubic-bezier(.3,1.5,.5,1); }
+  .circle { transition: transform .35s cubic-bezier(.3,1.5,.5,1); }
   .page { display: none; } .page.on { display: block; }
 
   /* Fenêtres (feuilles iOS) */
@@ -227,8 +243,8 @@
   .version { text-align: center; color: var(--label-3); font-size: 13px; margin: 22px 0 0; line-height: 1.5; }
   button:focus-visible, .hero:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
-  .toast { position: fixed; left: 50%; bottom: calc(var(--tab) + 20px + env(safe-area-inset-bottom)); transform: translateX(-50%);
-    background: rgba(58,58,60,.92); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); padding: 12px 18px; border-radius: 14px;
+  .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    background: rgba(58,58,60,.7); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); padding: 12px 18px; border-radius: 14px;
     font-size: 15px; font-weight: 500; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; max-width: 90vw; text-align: center;
     box-shadow: 0 10px 30px rgba(0,0,0,.5); }
   .toast.show { opacity: 1; }
@@ -240,11 +256,10 @@
     <h1 id="pageTitle">Budget</h1>
     <div class="hbtns">
       <button class="circle" id="btnSettings" aria-label="Réglages"><svg viewBox="0 0 256 256" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M237.94,107.21a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A111.92,111.92,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.63a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21ZM128,168a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z"/></svg></button>
-      <button class="circle accent" id="btnAdd" aria-label="Ajouter une opération"><svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z"/></svg></button>
     </div>
   </header>
 
-  <div class="monthnav" id="monthNav">
+  <div class="monthnav glass" id="monthNav">
     <button class="navbtn" id="prevMonth" aria-label="Mois précédent"><svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg></button>
     <span id="monthLabel"></span>
     <button class="navbtn" id="nextMonth" aria-label="Mois suivant"><svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></button>
@@ -300,11 +315,14 @@
   </div>
 </main>
 
-<nav class="tabs"><div>
+<nav class="tabs">
+  <div class="glass tabbar" id="tabBar"><span class="tab-pill" id="tabPill"></span>
   <button data-page="pHome" class="on"><svg class="r" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/></svg><svg class="f" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M224,120v96a8,8,0,0,1-8,8H160a8,8,0,0,1-8-8V164a4,4,0,0,0-4-4H108a4,4,0,0,0-4,4v52a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V120a16,16,0,0,1,4.69-11.31l80-80a16,16,0,0,1,22.62,0l80,80A16,16,0,0,1,224,120Z"/></svg>Accueil</button>
   <button data-page="pBudgets"><svg class="r" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"/></svg><svg class="f" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32L167.6,99.71h0l-37.71,37.71-23.95,23.95a40,40,0,0,0,62-35.67,8,8,0,1,1,16-.9,56,56,0,0,1-95.5,42.79h0a56,56,0,0,1,73.13-84.43L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"/></svg>Budgets</button>
   <button data-page="pNews"><svg class="r" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M88,112a8,8,0,0,1,8-8h80a8,8,0,0,1,0,16H96A8,8,0,0,1,88,112Zm8,40h80a8,8,0,0,0,0-16H96a8,8,0,0,0,0,16ZM232,64V184a24,24,0,0,1-24,24H32A24,24,0,0,1,8,184.11V88a8,8,0,0,1,16,0v96a8,8,0,0,0,16,0V64A16,16,0,0,1,56,48H216A16,16,0,0,1,232,64Zm-16,0H56V184a23.84,23.84,0,0,1-1.37,8H208a8,8,0,0,0,8-8Z"/></svg><svg class="f" viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M216,48H56A16,16,0,0,0,40,64V184a8,8,0,0,1-16,0V88A8,8,0,0,0,8,88v96.11A24,24,0,0,0,32,208H208a24,24,0,0,0,24-24V64A16,16,0,0,0,216,48ZM176,152H96a8,8,0,0,1,0-16h80a8,8,0,0,1,0,16Zm0-32H96a8,8,0,0,1,0-16h80a8,8,0,0,1,0,16Z"/></svg>Actus</button>
-</div></nav>
+</div>
+  <button class="glass fab" id="btnAdd" aria-label="Ajouter une opération"><svg viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z"/></svg></button>
+</nav>
 
 <!-- Ajout / modification -->
 <div class="overlay" id="txOverlay">
@@ -389,7 +407,7 @@
 <script>
 (() => {
   "use strict";
-  const APP_VERSION = "16 (29/10)"; // à changer avec VERSION dans sw.js à chaque mise à jour
+  const APP_VERSION = "17 (29/10)"; // à changer avec VERSION dans sw.js à chaque mise à jour
 
   // ================= Catégories =================
   const CATS = {
@@ -761,6 +779,13 @@
   }
 
   // ================= Rendu =================
+  // Pastille de verre sous l'onglet actif : elle glisse (avec un léger rebond) d'un onglet à l'autre
+  function movePill() {
+    const on = document.querySelector("nav.tabs button.on"); if (!on) return;
+    $("tabPill").style.width = on.offsetWidth + "px";
+    $("tabPill").style.transform = `translateX(${on.offsetLeft}px)`;
+  }
+  window.addEventListener("resize", movePill);
   function render() {
     $("monthLabel").textContent = new Date(view.y, view.m, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
     $("monthNav").style.display = page === "pNews" ? "none" : "flex";
@@ -769,6 +794,7 @@
     if (page === "pHome") renderHome();
     if (page === "pBudgets") renderBudgets();
     if (page === "pNews") renderNews();
+    movePill();
   }
 
   // ================= Argent sur le compte =================
@@ -1500,7 +1526,7 @@
   function showImported(lastDate) {
     if (lastDate) { const [y, m] = lastDate.split("-").map(Number); view = { y, m: m - 1 }; }
     page = "pHome";
-    document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("on", x.dataset.page === "pHome"));
+    document.querySelectorAll("nav.tabs button[data-page]").forEach(x => x.classList.toggle("on", x.dataset.page === "pHome"));
     document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "pHome"));
     render();
   }
@@ -1630,9 +1656,9 @@
   // ================= Événements =================
   $("prevMonth").onclick = () => { view = shiftMonth(view.y, view.m, -1); showUncatOnly = false; render(); };
   $("nextMonth").onclick = () => { view = shiftMonth(view.y, view.m, 1); showUncatOnly = false; render(); };
-  document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav.tabs button[data-page]").forEach(b => b.onclick = () => {
     page = b.dataset.page;
-    document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("on", x === b));
+    document.querySelectorAll("nav.tabs button[data-page]").forEach(x => x.classList.toggle("on", x === b));
     document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === page));
     window.scrollTo(0, 0);
     render();
