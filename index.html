@@ -119,6 +119,11 @@
     pointer-events: none; z-index: 20; max-width: 90vw; text-align: center; }
   .toast.show { opacity: 1; }
   svg text { fill: var(--muted); font-size: 10px; }
+  .link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 13px; text-decoration: underline; cursor: pointer; }
+  .report div { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.45; word-break: break-word; }
+  .report div:last-child { border-bottom: 0; }
+  textarea.diag { width: 100%; height: 40vh; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px; font: 11px/1.4 ui-monospace, Menlo, monospace; white-space: pre; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -217,9 +222,11 @@
     <h3>Réglages</h3>
     <p class="note">Tes données restent uniquement sur ce téléphone. Rien n'est envoyé sur internet : la connexion sert seulement à télécharger les actus.</p>
     <label>Relevé bancaire</label>
-    <div class="row" style="margin-top:0"><button class="btn primary" id="btnCsv">Importer un relevé (CSV)</button></div>
-    <input type="file" id="csvFile" accept=".csv,text/csv,text/plain" style="display:none">
-    <p class="note">Exporte tes opérations en CSV depuis l'appli ou le site de ta banque. Les doublons sont ignorés si tu importes deux fois la même période.</p>
+    <div class="row" style="margin-top:0"><button class="btn primary" id="btnCsv">Importer des relevés (PDF ou CSV)</button></div>
+    <input type="file" id="csvFile" accept=".csv,.pdf,text/csv,text/plain,application/pdf" multiple style="display:none">
+    <p class="note">Relevés PDF du Crédit Agricole (tu peux en choisir plusieurs d'un coup) ou export CSV de ta banque. Le PDF est lu sur le téléphone, rien n'est envoyé. Les doublons sont ignorés si tu importes deux fois la même période.
+      <br><button class="link" id="btnDiag">Un relevé PDF est mal lu ? Diagnostic anonymisé</button></p>
+    <input type="file" id="diagFile" accept=".pdf,application/pdf" style="display:none">
     <label>Sauvegarde</label>
     <div class="row" style="margin-top:0"><button class="btn ghost" id="btnExport">Exporter une sauvegarde</button></div>
     <div class="row"><button class="btn ghost" id="btnImport">Restaurer une sauvegarde</button></div>
@@ -227,6 +234,18 @@
     <p class="note" id="storageInfo"></p>
     <div class="row"><button class="btn danger" id="btnWipe">Tout effacer</button></div>
     <div class="row"><button class="btn ghost" id="setClose">Fermer</button></div>
+  </div>
+</div>
+
+<!-- Résultat d'import / diagnostic -->
+<div class="overlay" id="infoOverlay">
+  <div class="sheet">
+    <h3 id="infoTitle"></h3>
+    <div class="report" id="infoBody"></div>
+    <textarea class="diag" id="infoText" readonly style="display:none"></textarea>
+    <div class="row" id="infoDiagRow" style="display:none"><button class="btn ghost" id="infoDiag">Voir le diagnostic anonymisé</button></div>
+    <div class="row" id="infoCopyRow" style="display:none"><button class="btn primary" id="infoCopy">Copier le diagnostic</button></div>
+    <div class="row"><button class="btn ghost" id="infoClose">Fermer</button></div>
   </div>
 </div>
 
@@ -855,9 +874,8 @@
     const iAmount = find(/MONTANT|AMOUNT|SOMME|VALEUR EN EUR/);
     if (iDate < 0 || (iAmount < 0 && iDebit < 0 && iCredit < 0)) throw new Error("Colonnes Date / Montant introuvables.");
 
-    const ids = new Set(db.transactions.map(t => t.id).concat(db.hidden)); // déjà là, ou supprimée exprès
-    const seen = {};
-    let added = 0, dup = 0, bad = 0, uncat = 0, lastDate = null;
+    const ops = [];
+    let bad = 0;
     for (const r of rows.slice(h + 1)) {
       const date = parseDate(r[iDate]);
       let val = NaN;
@@ -868,8 +886,21 @@
         else if (iAmount >= 0) val = parseNum(r[iAmount]);
       } else val = parseNum(r[iAmount]);
       if (!date || isNaN(val) || val === 0) { bad++; continue; }
-      let label = [r[iLabel], iLabel2 >= 0 ? r[iLabel2] : ""].filter(Boolean).join(" ").replace(/\s+/g, " ").trim().slice(0, 140);
-      if (!label) label = "Opération bancaire";
+      ops.push({ date, val, label: [r[iLabel], iLabel2 >= 0 ? r[iLabel2] : ""].filter(Boolean).join(" ") });
+    }
+    return { ...addImported(ops), bad };
+  }
+
+  // Ajoute des opérations lues dans un relevé (CSV ou PDF) : [{ date: "AAAA-MM-JJ", val: euros (négatif = débit), label }].
+  // L'identifiant dépend de la date, du montant et du libellé : réimporter la même période ne crée pas de doublon.
+  // (src "csv" = opération importée d'un relevé, quel que soit le format)
+  function addImported(ops) {
+    const ids = new Set(db.transactions.map(t => t.id).concat(db.hidden)); // déjà là, ou supprimée exprès
+    const seen = {};
+    let added = 0, dup = 0, uncat = 0, lastDate = null;
+    for (const op of ops) {
+      const { date, val } = op;
+      const label = String(op.label || "").replace(/\s+/g, " ").trim().slice(0, 140) || "Opération bancaire";
       const amount = Math.round(Math.abs(val) * 100);
       const type = val > 0 ? "income" : "expense";
       const base = `${date}|${val > 0 ? "+" : "-"}${amount}|${norm(label)}`;
@@ -883,7 +914,169 @@
       if (!lastDate || date > lastDate) lastDate = date;
     }
     save();
-    return { added, dup, bad, uncat, lastDate };
+    return { added, dup, uncat, lastDate };
+  }
+
+  // ================= Import de relevés PDF =================
+  // Le texte du PDF est lu sur le téléphone avec pdf.js (Mozilla, dans lib/pdfjs), chargé seulement au premier import PDF.
+  // Réglé sur la mise en page des relevés Crédit Agricole : colonnes Date opé. / Date valeur / Libellé / Débit / Crédit,
+  // dates "16.12" sans année, montants "1 234,56", lignes "Ancien solde", "Total des opérations", "Nouveau solde".
+  let pdfjsLoading = null;
+  function loadPdfJs() {
+    if (!pdfjsLoading) pdfjsLoading = import("./lib/pdfjs/pdf.min.js").then(m => {
+      m.GlobalWorkerOptions.workerSrc = new URL("lib/pdfjs/pdf.worker.min.js", location.href).href;
+      return m;
+    }).catch(() => { pdfjsLoading = null; throw new Error("lecteur PDF indisponible : connecte-toi à internet pour le premier import."); });
+    return pdfjsLoading;
+  }
+
+  // Texte du PDF avec sa position, regroupé par page en lignes puis en mots : [[{ y, h, words: [{ s, x, r }], text }]]
+  async function readPdfLines(file) {
+    const pdfjs = await loadPdfJs();
+    let doc;
+    try { doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise; }
+    catch (e) { throw new Error(e && e.name === "PasswordException" ? "PDF protégé par mot de passe." : "PDF illisible."); }
+    const pages = [];
+    for (let n = 1; n <= doc.numPages; n++) {
+      const page = await doc.getPage(n);
+      const H = page.getViewport({ scale: 1 }).height;
+      const items = (await page.getTextContent()).items.filter(i => i.str && i.str.trim())
+        .map(i => ({ s: i.str, x: i.transform[4], y: H - i.transform[5], w: i.width, h: Math.abs(i.transform[3]) || i.height || 8 }));
+      pages.push(toLines(items));
+    }
+    doc.destroy();
+    return pages;
+  }
+  function toLines(items) {
+    items.sort((a, b) => a.y - b.y || a.x - b.x);
+    const lines = [];
+    for (const it of items) {
+      const l = lines[lines.length - 1];
+      if (l && Math.abs(it.y - l.y) < Math.max(2, Math.min(it.h, l.h) * 0.5)) l.items.push(it);
+      else lines.push({ y: it.y, h: it.h, items: [it] });
+    }
+    return lines.map(l => {
+      const words = [];
+      for (const it of l.items.sort((a, b) => a.x - b.x)) {
+        const last = words[words.length - 1], gap = last ? it.x - last.r : Infinity;
+        if (gap < it.h * 0.2) { last.s += (gap > it.h * 0.1 ? " " : "") + it.s; last.r = Math.max(last.r, it.x + it.w); }
+        else words.push({ s: it.s, x: it.x, r: it.x + it.w });
+      }
+      for (const w of words) w.s = w.s.replace(/\s+/g, " ").trim();
+      return { y: l.y, h: l.h, words, text: words.map(w => w.s).join(" ") };
+    });
+  }
+
+  const MONTHS = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"];
+  const RE_AMOUNT = /^\d{1,3}(?:[ .  ]?\d{3})*,\d{2}$/;
+  const RE_DAY = /^(\d{2})[.\/](\d{2})(?:[.\/](\d{2,4}))?(?!\d)/;
+
+  // Dates du relevé, pour retrouver l'année des opérations notées "16.12"
+  function statementDates(pages) {
+    let start = null;
+    for (const l of pages.flat()) {
+      const t = foldText(l.text);
+      const m = t.match(/nouveau solde.*?(\d{2})[.\/](\d{2})[.\/](\d{4})/) || t.match(/arrete\s*:?\s*(\d{1,2})(?:er)?\s+([a-z]+)\s+(\d{4})/)
+        || t.match(/\bau\s+(\d{1,2})(?:er)?\s+([a-z]+)\s+(\d{4})/);
+      if (m) { const mo = /^\d+$/.test(m[2]) ? +m[2] : MONTHS.indexOf(m[2]) + 1; if (mo >= 1 && mo <= 12) return { end: new Date(+m[3], mo - 1, +m[1]) }; }
+      const s = t.match(/ancien solde.*?(\d{2})[.\/](\d{2})[.\/](\d{4})/);
+      if (s && !start) start = new Date(+s[3], +s[2] - 1, +s[1]);
+    }
+    return { start };
+  }
+  function opDate(dd, mm, yy, ref) {
+    if (+mm < 1 || +mm > 12 || +dd < 1 || +dd > 31) return null;
+    let y = yy ? (+yy < 100 ? 2000 + +yy : +yy) : 0;
+    if (!y) {
+      // Un relevé couvre environ un mois : "28.12" sur un relevé arrêté en janvier est de l'année d'avant
+      const at = yr => new Date(yr, mm - 1, dd);
+      if (ref.end) { y = ref.end.getFullYear(); if (at(y) - ref.end > 7 * 864e5) y--; }
+      else if (ref.start) { y = ref.start.getFullYear(); if (ref.start - at(y) > 7 * 864e5) y++; }
+      else { y = new Date().getFullYear(); if (at(y) > new Date()) y--; }
+    }
+    return `${y}-${pad(+mm)}-${pad(+dd)}`;
+  }
+
+  // Repère le tableau (ligne d'en-tête avec Débit et Crédit), puis lit chaque opération :
+  // date au début de la ligne, libellé (éventuellement sur plusieurs lignes), montant sous Débit ou Crédit selon sa position.
+  function parseStatement(pages) {
+    const ref = statementDates(pages);
+    const ops = [], read = { deb: 0, cred: 0 }, tot = { deb: 0, cred: 0, found: false }, others = new Set();
+    let cols = null, inTable = false, cur = null, firstAcct = null, skip = false, lastY = 0;
+    const close = () => { if (cur && cur.val && !skip) ops.push(cur); cur = null; };
+    pages.forEach(lines => {
+      lines.forEach((l, li) => {
+        const wDeb = l.words.find(w => /^debit\b/.test(foldText(w.s))), wCred = l.words.find(w => /^credit\b/.test(foldText(w.s)));
+        if (wDeb && wCred && wCred.r > wDeb.r) {
+          close();
+          const wLib = lines.slice(Math.max(0, li - 2), li + 3).flatMap(x => x.words).find(w => /^libelle/.test(foldText(w.s)));
+          const W = wCred.r - wDeb.r;
+          cols = { deb: wDeb.r, cred: wCred.r, lib: wLib ? wLib.x : wDeb.r - 4 * W, zone: wDeb.r - 0.9 * W };
+          // Compte du tableau ("... Compte Eko n° 12345678901" juste au-dessus) : seul le premier compte du relevé est importé
+          for (const x of lines.slice(Math.max(0, li - 4), li).reverse()) {
+            const m = foldText(x.text).match(/n\s*°\s*(\d[\d ]{4,})/);
+            if (m) { const acct = m[1].replace(/\D/g, ""); firstAcct = firstAcct || acct; skip = acct !== firstAcct; if (skip) others.add(acct); break; }
+          }
+          inTable = true; lastY = l.y;
+          return;
+        }
+        if (!inTable) return;
+        // À gauche : dates et libellé. À droite : montants ("1 234,56" peut être coupé en deux morceaux)
+        const left = [], amounts = [];
+        for (const w of l.words) {
+          if (w.r <= cols.zone) { left.push(w); continue; }
+          const a = amounts[amounts.length - 1];
+          if (a && /^[\d .  ]+$/.test(a.s) && /^[\d .,  ]+$/.test(w.s) && w.x - a.r < l.h * 0.6) { a.s += " " + w.s; a.r = w.r; }
+          else amounts.push({ ...w });
+        }
+        let deb = 0, cred = 0;
+        for (const a of amounts) {
+          if (!RE_AMOUNT.test(a.s)) { if (/[a-z0-9]/i.test(a.s)) left.push(a); continue; }
+          if (Math.abs(a.r - cols.deb) <= Math.abs(a.r - cols.cred)) deb += parseNum(a.s); else cred += parseNum(a.s);
+        }
+        const text = left.map(w => w.s).join(" ").trim(), ft = foldText(text);
+        if (/\bsolde\b|\btotal\b/.test(ft)) {
+          close();
+          if (/total des operations/.test(ft) && !skip) { tot.deb += deb; tot.cred += cred; tot.found = true; }
+          if (/nouveau solde/.test(ft)) inTable = false;
+          return;
+        }
+        const md = text.match(RE_DAY);
+        if (md && left[0].x < cols.lib - 1) {
+          close();
+          const date = opDate(md[1], md[2], md[3], ref);
+          cur = date && { date, val: cred - deb, label: text.replace(/^(\d{2}[.\/]\d{2}(?:[.\/]\d{2,4})?\s+){1,2}/, "") };
+          if (cur && !skip) { read.deb += deb; read.cred += cred; }
+          lastY = l.y;
+        } else if (cur && (!left.length || left[0].x >= cols.lib - 2) && l.y - lastY < l.h * 2.5) {
+          // Suite du libellé sur la ligne suivante ("Mt initial : 29,89 RON"…)
+          if (text) cur.label += " " + text;
+          if (!cur.val && (deb || cred)) { cur.val = cred - deb; if (!skip) { read.deb += deb; read.cred += cred; } }
+          lastY = l.y;
+        } else close();
+      });
+      close(); // fin de page : le tableau peut continuer sur la suivante
+    });
+    const same = (a, b) => Math.abs(a - b) < 0.005;
+    return { ops, read, tot, ok: tot.found && same(tot.deb, read.deb) && same(tot.cred, read.cred), others: others.size, end: ref.end || null, header: !!cols };
+  }
+
+  // Version du PDF sans aucune donnée perso (lettres -> x, chiffres -> 9) mais avec la position du texte,
+  // pour pouvoir régler la lecture d'un relevé sans voir son contenu
+  const DIAG_KEEP = new Set(("date ope opes valeur libelle libelles des de du au operations operation debit credit solde ancien nouveau " +
+    "crediteur debiteur total sous report reporter arrete releve compte comptes page euros eur carte prelevement prlv virement vir retrait " +
+    "cotis avoir sepa paiement par frais mt initial n " + MONTHS.join(" ")).split(" "));
+  const anonymize = s => s.split(/(\s+)/).map(w => DIAG_KEEP.has(foldText(w).replace(/[^a-z]/g, "")) ? w
+    : w.replace(/\p{Lu}/gu, "X").replace(/\p{Ll}/gu, "x").replace(/\d/g, "9")).join("");
+  function pdfDiagnostic(pages, res) {
+    const yn = b => b ? "oui" : "non";
+    const out = [`Diagnostic anonymisé (lettres -> x, chiffres -> 9). Pages : ${pages.length}. En-tête trouvé : ${yn(res.header)}. ` +
+      `Opérations lues : ${res.ops.length}. Totaux du relevé trouvés : ${yn(res.tot.found)}, identiques : ${yn(res.ok)}. Date de fin trouvée : ${yn(res.end)}.`];
+    pages.forEach((lines, i) => {
+      out.push(`--- page ${i + 1}`);
+      for (const l of lines) out.push(`${Math.round(l.y)}: ` + l.words.map(w => `[${Math.round(w.x)}-${Math.round(w.r)}] ${anonymize(w.s)}`).join("  "));
+    });
+    return out.join("\n");
   }
 
   function readFileSmart(file, cb) {
@@ -898,6 +1091,82 @@
       } else cb(txt);
     };
     r.readAsText(file, "utf-8");
+  }
+
+  // ================= Import : enchaînement =================
+  const readText = f => new Promise(res => readFileSmart(f, res));
+  const isPdfFile = f => /\.pdf$/i.test(f.name) || f.type === "application/pdf";
+  function showImported(lastDate) {
+    if (lastDate) { const [y, m] = lastDate.split("-").map(Number); view = { y, m: m - 1 }; }
+    page = "pHome";
+    document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("on", x.dataset.page === "pHome"));
+    document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "pHome"));
+    render();
+  }
+  function showInfo(title, lines, diag) {
+    $("infoTitle").textContent = title;
+    $("infoBody").innerHTML = lines.map(x => `<div>${x}</div>`).join("");
+    $("infoText").value = diag || ""; $("infoText").style.display = "none";
+    $("infoDiagRow").style.display = diag ? "flex" : "none";
+    $("infoCopyRow").style.display = "none";
+    openSheet("infoOverlay");
+  }
+  async function importFiles(files) {
+    if (!files.some(isPdfFile)) {
+      // CSV seulement : un simple message
+      const t = { added: 0, dup: 0, uncat: 0, bad: 0, lastDate: null }, errors = [];
+      for (const f of files) {
+        try {
+          const r = importBankCSV(await readText(f));
+          for (const k of ["added", "dup", "uncat", "bad"]) t[k] += r[k];
+          if (r.lastDate && (!t.lastDate || r.lastDate > t.lastDate)) t.lastDate = r.lastDate;
+        } catch (err) { errors.push((files.length > 1 ? f.name + " : " : "") + (err.message || "Fichier CSV illisible")); }
+      }
+      if (errors.length && !t.added && !t.dup) return toast(errors.join(" · "), 4500);
+      closeSheet(); showImported(t.lastDate);
+      toast(`${t.added} importée(s)` + (t.dup ? `, ${t.dup} doublon(s) ignoré(s)` : "") + (t.uncat ? `, ${t.uncat} à classer` : "")
+        + (t.bad ? `, ${t.bad} ligne(s) illisible(s)` : "") + (errors.length ? ` · ${errors.join(" · ")}` : ""), 4500);
+      return;
+    }
+    // Avec des PDF : compte rendu fichier par fichier, avec la vérification des totaux
+    toast("Lecture des relevés…", 60000);
+    const report = [], diags = [];
+    let lastDate = null, uncat = 0;
+    for (const f of files.sort((a, b) => a.name.localeCompare(b.name))) {
+      const name = `<b>${esc(f.name)}</b>`;
+      try {
+        let r;
+        if (isPdfFile(f)) {
+          const pages = await readPdfLines(f);
+          if (!pages.some(p => p.length)) throw new Error("ce PDF ne contient pas de texte (scan ?), il ne peut pas être lu.");
+          const res = parseStatement(pages);
+          if (!res.ops.length) {
+            diags.push(pdfDiagnostic(pages, res));
+            report.push(`❌ ${name} : aucune opération trouvée. La mise en page est sûrement différente de celle prévue : envoie-moi le diagnostic anonymisé.`);
+            continue;
+          }
+          r = addImported(res.ops);
+          const msg = `${res.ops.length} opération(s)${res.end ? ` (relevé au ${res.end.toLocaleDateString("fr-FR")})` : ""}, ${r.added} ajoutée(s)${r.dup ? `, ${r.dup} déjà là` : ""}.`;
+          if (res.ok) report.push(`✅ ${name} : ${msg} Totaux identiques au relevé.`);
+          else if (res.tot.found) {
+            diags.push(pdfDiagnostic(pages, res));
+            report.push(`⚠️ ${name} : ${msg} Mais les totaux ne collent pas avec le relevé (débits lus ${fmt(Math.round(res.read.deb * 100))} pour ${fmt(Math.round(res.tot.deb * 100))}, `
+              + `crédits lus ${fmt(Math.round(res.read.cred * 100))} pour ${fmt(Math.round(res.tot.cred * 100))}). Vérifie ce mois-là, et envoie-moi le diagnostic anonymisé.`);
+          } else report.push(`ℹ️ ${name} : ${msg} Total du relevé introuvable, vérification impossible.`);
+          if (res.others) report.push(`ℹ️ ${name} contient aussi ${res.others} autre(s) compte(s) (livret…) : seul le premier compte du relevé est importé.`);
+        } else {
+          r = importBankCSV(await readText(f));
+          report.push(`✅ ${name} : ${r.added} ajoutée(s)${r.dup ? `, ${r.dup} déjà là` : ""}${r.bad ? `, ${r.bad} ligne(s) illisible(s)` : ""}.`);
+        }
+        uncat += r.uncat;
+        if (r.lastDate && (!lastDate || r.lastDate > lastDate)) lastDate = r.lastDate;
+      } catch (err) { report.push(`❌ ${name} : ${esc(err.message || "illisible")}`); }
+    }
+    if (uncat) report.push(`${uncat} opération(s) à classer : touche « Classer » sur l'accueil.`);
+    $("toast").classList.remove("show");
+    showImported(lastDate);
+    $("setOverlay").classList.remove("open");
+    showInfo("Import des relevés", report, diags.join("\n\n"));
   }
 
   // ================= Sauvegarde =================
@@ -998,21 +1267,28 @@
     });
   };
   $("btnCsv").onclick = () => $("csvFile").click();
-  $("csvFile").onchange = e => {
+  $("csvFile").onchange = e => { const files = [...e.target.files]; e.target.value = ""; if (files.length) importFiles(files); };
+  $("btnDiag").onclick = () => $("diagFile").click();
+  $("diagFile").onchange = async e => {
     const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-    readFileSmart(f, txt => {
-      try {
-        const r = importBankCSV(txt);
-        closeSheet();
-        if (r.lastDate) { const [y, m] = r.lastDate.split("-").map(Number); view = { y, m: m - 1 }; }
-        page = "pHome";
-        document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("on", x.dataset.page === "pHome"));
-        document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "pHome"));
-        render();
-        toast(`${r.added} importée(s)` + (r.dup ? `, ${r.dup} doublon(s) ignoré(s)` : "") + (r.uncat ? `, ${r.uncat} à classer` : "") + (r.bad ? `, ${r.bad} ligne(s) illisible(s)` : ""), 4500);
-      } catch (err) { toast(err.message || "Fichier CSV illisible", 4500); }
-    });
+    try {
+      toast("Lecture du relevé…", 60000);
+      const pages = await readPdfLines(f);
+      const diag = pdfDiagnostic(pages, parseStatement(pages));
+      $("toast").classList.remove("show");
+      $("setOverlay").classList.remove("open");
+      showInfo("Diagnostic anonymisé", ["Les lettres sont remplacées par x et les chiffres par 9 : ni tes montants ni tes libellés n'apparaissent, seulement la place du texte sur la page. Tu peux me l'envoyer sans risque."], diag);
+      $("infoDiag").onclick();
+    } catch (err) { toast(err.message || "PDF illisible", 4500); }
   };
+  $("infoDiag").onclick = () => { $("infoText").style.display = "block"; $("infoDiagRow").style.display = "none"; $("infoCopyRow").style.display = "flex"; };
+  $("infoCopy").onclick = async () => {
+    const t = $("infoText");
+    try { await navigator.clipboard.writeText(t.value); }
+    catch (err) { t.focus(); t.select(); document.execCommand("copy"); }
+    toast("Diagnostic copié : colle-le dans la conversation avec Claude");
+  };
+  $("infoClose").onclick = closeSheet;
   $("btnWipe").onclick = () => arm($("btnWipe"), "Tout effacer", () => {
     db = blank(); save(); render(); updateStorageInfo(); toast("Tout a été effacé");
   });

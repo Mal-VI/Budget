@@ -19,9 +19,13 @@ Ouvre-la toujours depuis l'icône : c'est là que tes données sont stockées. S
 
 ## Importer ses relevés
 
-Depuis le site ou l'appli de ta banque, exporte tes opérations en **CSV**. Dans l'appli, va dans ⚙︎ > **Importer un relevé (CSV)**.
+⚙︎ > **Importer des relevés (PDF ou CSV)**. Tu peux en sélectionner plusieurs d'un coup.
+- **PDF** : les relevés de compte du Crédit Agricole (téléchargés depuis l'appli Ma Banque, puis « Enregistrer dans Fichiers »). Le PDF est lu sur le téléphone avec pdf.js (dans `lib/pdfjs`), rien n'est envoyé. L'appli compare ce qu'elle a lu avec la ligne « Total des opérations » du relevé et te dit si ça correspond. Seul le premier compte du relevé est importé (pas les livrets). Il faut internet la première fois pour télécharger le lecteur PDF.
+- **CSV** : l'export des opérations depuis le site de ta banque.
+- N'importe pas la même période en PDF et en CSV : les libellés diffèrent un peu, donc les opérations seraient en double.
 - Les doublons sont ignorés : tu peux réimporter une période qui se chevauche. Une opération importée que tu as supprimée ne revient pas non plus.
 - Les opérations non reconnues sont marquées « à classer ». Quand tu en classes une, l'appli retient le commerçant et classe automatiquement les mêmes la prochaine fois.
+- Relevé mal lu ? ⚙︎ > **Diagnostic anonymisé** : une version du PDF où les lettres deviennent x et les chiffres 9, qui ne garde que la position du texte. Elle permet de corriger la lecture sans voir tes données.
 
 ## Sauvegarde
 
