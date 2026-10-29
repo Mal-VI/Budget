@@ -257,6 +257,9 @@
     <input type="file" id="csvFile" accept=".csv,.pdf,text/csv,text/plain,application/pdf" multiple style="display:none">
     <p class="note">Plusieurs fichiers possibles, doublons ignorés. <button class="link" id="btnDiag">PDF mal lu ?</button></p>
     <input type="file" id="diagFile" accept=".pdf,application/pdf" style="display:none">
+    <label for="ownName">Ton nom</label>
+    <input id="ownName" placeholder="Prénom Nom" autocomplete="name" maxlength="60">
+    <p class="note">Les virements à ton nom (vers Revolut…) vont dans « Mes comptes » et ne comptent pas.</p>
     <label>Sauvegarde</label>
     <div class="row" style="margin-top:0"><button class="btn ghost" id="btnExport">Exporter une sauvegarde</button></div>
     <div class="row"><button class="btn ghost" id="btnImport">Restaurer une sauvegarde</button></div>
@@ -301,6 +304,7 @@
       { id: "epargne", label: "Épargne", icon: "🏦", color: "#2dd4bf" },
       { id: "virements", label: "Virements", icon: "💸", color: "#38bdf8" },
       { id: "especes", label: "Espèces", icon: "💶", color: "#a3e635" },
+      { id: "interne", label: "Mes comptes", icon: "🔄", color: "#64748b" },
       { id: "autre_d", label: "Autre", icon: "•", color: "#94a3b8" }
     ],
     income: [
@@ -311,6 +315,7 @@
       { id: "remb", label: "Rembour\u00ADsement", icon: "↩️", color: "#a78bfa" }, // \u00AD = césure seulement si ça ne tient pas
       { id: "vir_recu", label: "Virements reçus", icon: "📥", color: "#38bdf8" },
       { id: "epargne_r", label: "Depuis l'épargne", icon: "🏦", color: "#2dd4bf" },
+      { id: "interne", label: "Mes comptes", icon: "🔄", color: "#64748b" },
       { id: "autre_r", label: "Autre", icon: "•", color: "#94a3b8" }
     ]
   };
@@ -319,7 +324,9 @@
   const isUncat = cat => cat === "autre_d" || cat === "autre_r";
   const FIXED = new Set(["logement", "abos", "epargne"]); // dépenses qui ne "s'étalent" pas dans le mois
   // Virements entre ton compte et ton épargne : l'argent reste à toi, ton total ne change pas
-  const INTERNAL = new Set(["epargne", "epargne_r"]);
+  const INTERNAL = new Set(["epargne", "epargne_r", "interne"]);
+  // "Mes comptes" : virement vers un autre de tes comptes (Revolut…), ni revenu ni dépense
+  const counted = t => t.cat !== "interne";
 
   // Règles par défaut pour classer les libellés bancaires (appliquées sur le libellé normalisé)
   // Règles par défaut pour classer les libellés bancaires, testées dans l'ordre sur le libellé normalisé
@@ -346,7 +353,7 @@
   ];
   // Virement (vers ou depuis une personne, Lydia, Wero…) : le nom de la personne ne doit pas être pris pour un commerçant
   // ("VIR VERS PAUL" n'est pas la boulangerie Paul), seules les règles qui ont du sens pour un virement s'appliquent.
-  const RE_TRANSFER = /^(VIR|VIRT|VIREMENT)\b|\bVIR(EMENT)?\b.*\b(EMIS|RECU|VERS|DE|EN VOTRE FAVEUR)\b|\bLYDIA\b|\bWERO\b|\bPAYLIB\b/;
+  const RE_TRANSFER = /^(VIR|VIRT|VIREMENT)\b|\bVIR(EMENT)?\b.*\b(EMIS|RECU|VERS|DE|EN VOTRE FAVEUR)\b|\bLYDIA\b|\bWERO\b|\bPAYLIB\b|\bTRANSFER (TO|FROM)\b|\bPAYMENT FROM\b/;
   const TRANSFER_OK = new Set(["logement", "epargne", "epargne_r", "salaire", "aides", "famille", "vente", "remb", "cadeaux", "etudes", "sante"]);
   // Mots-clés reliant les actus à tes catégories de dépenses.
   // Comparés en mots entiers, sans accents ni majuscules. Féminin / pluriel acceptés sauf pour les mots de 3 lettres
@@ -373,7 +380,7 @@
   // hidden : identifiants des opérations importées puis supprimées, pour qu'un nouvel import ne les recrée pas
   // balance : argent total (compte + épargne) saisi à la main { amount: centimes (négatif possible), date: "AAAA-MM-JJ" }, ou null
   // savings : livrets compris dans ce total [{ id, name, amount: centimes à la même date, rates: [{ from: "AAAA-MM-JJ", rate: 1.7 }] }]
-  function blank() { return { version: 2, transactions: [], budgets: {}, rules: [], hidden: [], balance: null, savings: [] }; }
+  function blank() { return { version: 2, transactions: [], budgets: {}, rules: [], hidden: [], balance: null, savings: [], ownName: "" }; }
   let interestMemo = new Map(); // intérêts déjà calculés, vidé à chaque modification des données
   function load() {
     try {
@@ -386,6 +393,7 @@
       d.hidden = Array.isArray(d.hidden) ? d.hidden : [];
       d.balance = validBalance(d.balance);
       d.savings = d.balance ? validSavings(d.savings) : [];
+      d.ownName = typeof d.ownName === "string" ? d.ownName.slice(0, 60) : "";
       d.version = 2;
       return d;
     } catch (e) {
@@ -447,12 +455,12 @@
   const txOfMonth = (y, m) => { const k = monthKey(y, m); return db.transactions.filter(t => t.date.slice(0, 7) === k); };
   function totals(list) {
     let inc = 0, exp = 0;
-    for (const t of list) (t.type === "income" ? (inc += t.amount) : (exp += t.amount));
+    for (const t of list) if (counted(t)) (t.type === "income" ? (inc += t.amount) : (exp += t.amount));
     return { inc, exp, bal: inc - exp };
   }
   function spentByCat(list) {
     const s = {};
-    for (const t of list) if (t.type === "expense") s[t.cat] = (s[t.cat] || 0) + t.amount;
+    for (const t of list) if (t.type === "expense" && counted(t)) s[t.cat] = (s[t.cat] || 0) + t.amount;
     return s;
   }
 
@@ -460,11 +468,27 @@
   function guessCat(label, type) {
     const key = labelKey(label), n = norm(label);
     for (const r of db.rules) if (r.type === type && r.kw && (key === r.kw || (" " + n + " ").includes(" " + r.kw + " "))) return r.cat;
+    if (isOwnName(n) || /REVOLUT|\bTOP ?UP\b/.test(n)) return "interne"; // virement à ton nom, rechargement Revolut
     const transfer = RE_TRANSFER.test(n);
     for (const [re, cat, t] of DEFAULT_RULES) if (t === type && (!transfer || TRANSFER_OK.has(cat)) && re.test(n)) return cat;
     if (transfer) return type === "income" ? "vir_recu" : "virements";
     if (type === "expense" && /\bPRLV\b|PRELEVEMENT|\bPRELEV\b|ECHEANCE/.test(n)) return "abos"; // prélèvement inconnu : le plus souvent un abonnement ou une facture
     return type === "income" ? "autre_r" : "autre_d";
+  }
+
+  // Ton nom (lu sur tes relevés ou saisi dans les réglages) : tous ses mots présents dans le libellé normalisé n
+  function isOwnName(n) {
+    const words = norm(db.ownName).split(" ").filter(w => w.length > 1);
+    return words.length > 0 && words.every(w => (" " + n + " ").includes(" " + w + " "));
+  }
+  // Reclasse les opérations importées que tu n'as pas modifiées toi-même, avec les règles actuelles
+  function reclassifyAuto() {
+    let n = 0;
+    for (const t of db.transactions) if (t.src === "csv" && !t.manual && t.label) {
+      const c = guessCat(t.label, t.type);
+      if (c !== t.cat && !(isUncat(c) && !isUncat(t.cat))) { t.cat = c; n++; }
+    }
+    return n;
   }
 
   function learnRule(tx) {
@@ -475,7 +499,8 @@
     db.rules.push({ kw, cat: tx.cat, type: tx.type });
     let n = 0;
     for (const t of db.transactions) {
-      if (t.id !== tx.id && t.type === tx.type && isUncat(t.cat) && labelKey(t.label || t.note) === kw) { t.cat = tx.cat; n++; }
+      // les mêmes opérations classées automatiquement suivent (pas celles que tu as choisies toi-même)
+      if (t.id !== tx.id && t.type === tx.type && !t.manual && t.cat !== tx.cat && labelKey(t.label || t.note) === kw) { t.cat = tx.cat; n++; }
     }
     return n;
   }
@@ -487,7 +512,7 @@
     const months = new Set([0, 1, 2, 3].map(k => { const s = shiftMonth(y, m, -k); return monthKey(s.y, s.m); }));
     const groups = {};
     for (const t of db.transactions) {
-      if (t.type !== "expense" || !months.has(t.date.slice(0, 7))) continue;
+      if (t.type !== "expense" || !counted(t) || !months.has(t.date.slice(0, 7))) continue;
       const key = labelKey(t.label || t.note);
       if (!key) continue;
       (groups[key] = groups[key] || []).push(t);
@@ -523,7 +548,7 @@
       const recKeys = new Set(recurring.map(r => r.key));
       let fixed = 0, variable = 0;
       for (const x of list) {
-        if (x.type !== "expense") continue;
+        if (x.type !== "expense" || !counted(x)) continue;
         if (FIXED.has(x.cat) || recKeys.has(labelKey(x.label || x.note))) fixed += x.amount; else variable += x.amount;
       }
       // Récurrents pas encore passés ce mois, s'ils étaient là le mois dernier (sinon ils ont peut-être été résiliés)
@@ -628,7 +653,7 @@
   }
   // Livret concerné par un virement d'épargne : celui dont le nom est dans le libellé ("VIREMENT VERS LIVRET A"), ou le seul livret
   function savingsFor(t) {
-    if (!INTERNAL.has(t.cat) || !db.savings.length) return null;
+    if ((t.cat !== "epargne" && t.cat !== "epargne_r") || !db.savings.length) return null;
     const n = " " + norm(t.label || t.note) + " ";
     return db.savings.find(x => norm(x.name) && n.includes(" " + norm(x.name) + " ")) || (db.savings.length === 1 ? db.savings[0] : null);
   }
@@ -1210,7 +1235,7 @@
   function parseStatement(pages) {
     const ref = statementDates(pages);
     const ops = [], read = { deb: 0, cred: 0 }, tot = { deb: 0, cred: 0, found: false }, others = new Set();
-    let cols = null, inTable = false, cur = null, firstAcct = null, skip = false, lastY = 0;
+    let cols = null, inTable = false, cur = null, firstAcct = null, skip = false, lastY = 0, holder = "";
     const close = () => { if (cur && cur.val && !skip) ops.push(cur); cur = null; };
     pages.forEach(lines => {
       lines.forEach((l, li) => {
@@ -1223,7 +1248,12 @@
           // Compte du tableau ("... Compte Eko n° 12345678901" juste au-dessus) : seul le premier compte du relevé est importé
           for (const x of lines.slice(Math.max(0, li - 4), li).reverse()) {
             const m = foldText(x.text).match(/n\s*°\s*(\d[\d ]{4,})/);
-            if (m) { const acct = m[1].replace(/\D/g, ""); firstAcct = firstAcct || acct; skip = acct !== firstAcct; if (skip) others.add(acct); break; }
+            if (m) {
+              const acct = m[1].replace(/\D/g, ""); firstAcct = firstAcct || acct; skip = acct !== firstAcct; if (skip) others.add(acct);
+              const h = x.text.match(/^(?:M|MR|MME|MLLE|MONSIEUR|MADAME)\.?\s+(.+?)\s+-\s+/i); // "M. Prénom Nom - Compte …"
+              if (h && !holder && h[1].trim().split(/\s+/).length >= 2) holder = h[1].trim();
+              break;
+            }
           }
           inTable = true; lastY = l.y;
           return;
@@ -1266,7 +1296,7 @@
       close(); // fin de page : le tableau peut continuer sur la suivante
     });
     const same = (a, b) => Math.abs(a - b) < 0.005;
-    return { ops, read, tot, ok: tot.found && same(tot.deb, read.deb) && same(tot.cred, read.cred), others: others.size, end: ref.end || null, header: !!cols };
+    return { ops, read, tot, ok: tot.found && same(tot.deb, read.deb) && same(tot.cred, read.cred), others: others.size, end: ref.end || null, header: !!cols, holder };
   }
 
   // Version du PDF sans aucune donnée perso (lettres -> x, chiffres -> 9) mais avec la position du texte,
@@ -1353,6 +1383,7 @@
             report.push(`❌ ${name} : rien trouvé. Envoie le diagnostic.`);
             continue;
           }
+          if (!db.ownName && res.holder) { db.ownName = res.holder; reclassifyAuto(); } // ton nom, pour reconnaître tes virements à toi-même
           r = addImported(res.ops);
           const msg = `${r.added} ajoutée(s)${r.dup ? `, ${r.dup} déjà là` : ""}.`;
           if (res.ok) report.push(`✅ ${name} : ${msg}`);
@@ -1422,6 +1453,7 @@
     }
     const bal = validBalance(d.balance);
     if (bal && (!db.balance || bal.date > db.balance.date)) { db.balance = bal; db.savings = validSavings(d.savings); }
+    if (!db.ownName && typeof d.ownName === "string") db.ownName = d.ownName.slice(0, 60);
     if (d.budgets && typeof d.budgets === "object") for (const [k, v] of Object.entries(d.budgets)) if (Number.isInteger(v) && v > 0 && CATS.expense.some(c => c.id === k)) db.budgets[k] = v;
     if (Array.isArray(d.rules)) for (const r of d.rules) if (r && r.kw && r.cat && r.type && !db.rules.some(x => x.kw === r.kw && x.type === r.type)) db.rules.push({ kw: String(r.kw), cat: String(r.cat), type: r.type });
     save();
@@ -1472,7 +1504,12 @@
   $("balDelete").onclick = () => arm($("balDelete"), "Ne plus suivre mon argent", () => { db.balance = null; db.savings = []; save(); closeSheet(); render(); });
   $("savAdd").onclick = () => { savDraft = readSavRows(); savDraft.push({ id: "", name: "", amount: "", rate: "" }); renderSavRows(); };
   $("savList").onclick = e => { const b = e.target.closest(".savDel"); if (!b) return; savDraft = readSavRows(); savDraft.splice(+b.dataset.i, 1); renderSavRows(); };
-  $("btnSettings").onclick = () => { updateStorageInfo(); disarm($("btnWipe"), "Tout effacer"); openSheet("setOverlay"); };
+  $("ownName").onchange = () => {
+    db.ownName = $("ownName").value.trim().slice(0, 60);
+    const n = reclassifyAuto(); save(); render();
+    if (n) toast(`${n} opération(s) reclassée(s)`);
+  };
+  $("btnSettings").onclick = () => { $("ownName").value = db.ownName; updateStorageInfo(); disarm($("btnWipe"), "Tout effacer"); openSheet("setOverlay"); };
   $("setClose").onclick = closeSheet;
   $("btnExport").onclick = exportData;
   $("btnImport").onclick = () => $("importFile").click();
@@ -1520,14 +1557,8 @@
     fetchNews(false);
   });
 
-  // Opérations importées encore "à classer" (et pas modifiées par toi) : nouvel essai de classement automatique,
-  // utile quand les règles s'améliorent avec une mise à jour de l'appli
-  let reguessed = 0;
-  for (const t of db.transactions) if (t.src === "csv" && isUncat(t.cat) && !t.manual && t.label) {
-    const c = guessCat(t.label, t.type);
-    if (!isUncat(c)) { t.cat = c; reguessed++; }
-  }
-  if (reguessed) save();
+  // Les règles s'améliorent avec les mises à jour : on reclasse ce qui a été classé automatiquement
+  if (reclassifyAuto()) save();
 
   render();
   fetchNews(false); // en arrière-plan, pour avoir les actus en cache
