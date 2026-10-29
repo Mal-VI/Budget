@@ -285,10 +285,11 @@
   ];
 
   // Mots-clés reliant les actus à tes catégories de dépenses.
-  // Comparés en mots entiers, sans accents ni majuscules (un "s" ou "x" final est accepté).
+  // Comparés en mots entiers, sans accents ni majuscules. Féminin / pluriel acceptés sauf pour les mots de 3 lettres
+  // ("caf" ne doit pas trouver "café"). Un "*" final = n'importe quel mot qui commence ainsi.
   const NEWS_KW = {
-    _base: ["prix", "inflation", "pouvoir d'achat", "taux", "livret a", "épargne", "impôt", "impots", "smic", "salaire",
-      "étudiant", "etudiant", "alternance", "apprenti", "jeune", "aide", "caf", "apl", "bourse", "banque", "crédit", "credit"],
+    _base: ["prix", "inflation*", "pouvoir d'achat", "taux", "livret a", "épargn*", "impôt", "impots", "smic", "salaire",
+      "étudiant", "etudiant", "alternance", "apprenti", "jeune", "aide*", "caf", "apl", "bourse", "banque", "crédit", "credit"],
     courses: ["alimentaire", "supermarché", "supermarche", "courses", "grande distribution"],
     logement: ["loyer", "logement", "électricité", "electricite", "gaz", "énergie", "energie", "edf", "apl", "crous"],
     transport: ["carburant", "essence", "gazole", "diesel", "sncf", "billet de train", "billets de train", "tgv", "ter", "péage", "peage", "voiture", "permis de conduire", "assurance auto", "transport"],
@@ -298,7 +299,7 @@
     sante: ["santé", "sante", "mutuelle", "médicament", "medicament", "remboursement", "sécurité sociale", "securite sociale", "franchise médicale"],
     shopping: ["soldes", "achats en ligne", "black friday", "vinted", "amazon", "e-commerce"],
     etudes: ["étudiant", "etudiant", "université", "universite", "bourse", "crous", "cvec"],
-    epargne: ["livret", "épargne", "epargne", "placement", "bourse de paris", "taux"]
+    epargne: ["livret", "épargn*", "placement", "bourse de paris", "taux"]
   };
 
   // ================= Stockage local =================
@@ -664,9 +665,11 @@
     const top = Object.entries(tot).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
     const map = [];
     const add = (list, cat) => {
-      for (const kw of new Set((list || []).map(foldText))) {
+      for (const k of new Set((list || []).map(foldText))) {
         // Mot entier : sinon "gaz" trouve "Gaza", "bourse" trouve "remboursement", "caf" trouve "café"…
-        const re = new RegExp("(^|[^a-z0-9])" + kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[sx]?(?![a-z0-9])");
+        const stem = k.endsWith("*"), kw = stem ? k.slice(0, -1) : k;
+        const end = stem ? "" : (kw.length > 3 ? "(?:e|es|s|x)?" : "") + "(?![a-z0-9])";
+        const re = new RegExp("(^|[^a-z0-9])" + kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + end);
         map.push({ re, cat });
       }
     };
