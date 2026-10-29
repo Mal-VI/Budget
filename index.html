@@ -147,8 +147,8 @@
   <!-- ===== Accueil ===== -->
   <div class="page on" id="pHome">
     <div class="stats">
-      <div class="stat full tap" id="accStat" role="button" tabindex="0"><small id="accLabel">Ton argent (compte + épargne)</small><b id="accValue"></b><small class="sub" id="accSav"></small><small class="sub" id="accSub"></small></div>
-      <div class="stat full"><small>Bilan du mois (revenus - dépenses)</small><b id="sBalance">0 €</b></div>
+      <div class="stat full tap" id="accStat" role="button" tabindex="0"><small id="accLabel">Ton argent</small><b id="accValue"></b><small class="sub" id="accSav"></small><small class="sub" id="accSub"></small></div>
+      <div class="stat full"><small>Bilan du mois</small><b id="sBalance">0 €</b></div>
       <div class="stat"><small>Revenus</small><b class="pos" id="sIncome">0 €</b></div>
       <div class="stat"><small>Dépenses</small><b class="neg" id="sExpense">0 €</b></div>
     </div>
@@ -164,11 +164,10 @@
   <div class="page" id="pBudgets">
     <div class="stats">
       <div class="stat"><small>Budget total</small><b id="bTotal">0 €</b></div>
-      <div class="stat"><small>Dépensé (catégories budgétées)</small><b id="bSpent">0 €</b></div>
+      <div class="stat"><small>Dépensé</small><b id="bSpent">0 €</b></div>
     </div>
     <section class="card">
-      <h2>Budget mensuel par catégorie</h2>
-      <p class="note" style="margin-top:0">Entre un montant par mois. Laisse vide pour ne pas suivre la catégorie. Tu es alerté à 80 % et en cas de dépassement.</p>
+      <h2>Budget par mois</h2>
       <div id="budgetList"></div>
     </section>
   </div>
@@ -226,19 +225,18 @@
 <div class="overlay" id="balOverlay">
   <div class="sheet">
     <h3>Ton argent en tout</h3>
-    <p class="note" style="margin-top:0">Additionne ce que t'affiche ta banque sur ton compte courant et sur ton épargne (Livret A…). Ensuite, ce total évolue tout seul avec les opérations que tu importes ou ajoutes. Tu peux le corriger quand tu veux.</p>
-    <p class="note">Les virements entre ton compte et ton épargne ne changent pas ton total : classe-les dans « Épargne » (vers l'épargne) ou « Depuis l'épargne » (retour sur le compte).</p>
+    <p class="note" style="margin-top:0">Compte + épargne, comme affiché par ta banque.</p>
     <div class="seg" id="balSeg">
       <button type="button" data-sign="1" class="on">Positif</button>
       <button type="button" data-sign="-1">Négatif</button>
     </div>
     <input class="big" id="balAmount" inputmode="decimal" placeholder="0,00 €" autocomplete="off">
-    <label for="balDate">Total à la date du</label>
+    <label for="balDate">Date</label>
     <input type="date" id="balDate">
-    <label>Dont épargne (pour calculer les intérêts)</label>
+    <label>Dont livrets (pour les intérêts)</label>
     <div id="savList"></div>
     <button type="button" class="link" id="savAdd">+ Ajouter un livret</button>
-    <p class="note">Montant sur chaque livret à la même date, et son taux (Livret A et LDDS : 1,7 % depuis le 1er août 2026, LEP : 2,5 %). Les intérêts sont calculés par quinzaines comme à la banque, et ajoutés à ton total le 31 décembre. Quand le taux change, retape-le ici.</p>
+    <p class="note">Taux au 1er août 2026 : Livret A et LDDS 1,7 %, LEP 2,5 %.</p>
     <datalist id="savNames"><option value="Livret A"><option value="LDDS"><option value="LEP"><option value="Livret Jeune"><option value="CEL"><option value="PEL"></datalist>
     <div class="err" id="balErr"></div>
     <div class="row">
@@ -253,12 +251,11 @@
 <div class="overlay" id="setOverlay">
   <div class="sheet">
     <h3>Réglages</h3>
-    <p class="note">Tes données restent uniquement sur ce téléphone. Rien n'est envoyé sur internet : la connexion sert seulement à télécharger les actus.</p>
-    <label>Relevé bancaire</label>
+    <p class="note" style="margin-top:0">Tes données restent sur ce téléphone.</p>
+    <label>Relevés</label>
     <div class="row" style="margin-top:0"><button class="btn primary" id="btnCsv">Importer des relevés (PDF ou CSV)</button></div>
     <input type="file" id="csvFile" accept=".csv,.pdf,text/csv,text/plain,application/pdf" multiple style="display:none">
-    <p class="note">Relevés PDF du Crédit Agricole (tu peux en choisir plusieurs d'un coup) ou export CSV de ta banque. Le PDF est lu sur le téléphone, rien n'est envoyé. Les doublons sont ignorés si tu importes deux fois la même période.
-      <br><button class="link" id="btnDiag">Un relevé PDF est mal lu ? Diagnostic anonymisé</button></p>
+    <p class="note">Plusieurs fichiers possibles, doublons ignorés. <button class="link" id="btnDiag">PDF mal lu ?</button></p>
     <input type="file" id="diagFile" accept=".pdf,application/pdf" style="display:none">
     <label>Sauvegarde</label>
     <div class="row" style="margin-top:0"><button class="btn ghost" id="btnExport">Exporter une sauvegarde</button></div>
@@ -302,6 +299,8 @@
       { id: "etudes", label: "Études", icon: "📚", color: "#818cf8" },
       { id: "cadeaux", label: "Cadeaux", icon: "🎁", color: "#e879f9" },
       { id: "epargne", label: "Épargne", icon: "🏦", color: "#2dd4bf" },
+      { id: "virements", label: "Virements", icon: "💸", color: "#38bdf8" },
+      { id: "especes", label: "Espèces", icon: "💶", color: "#a3e635" },
       { id: "autre_d", label: "Autre", icon: "•", color: "#94a3b8" }
     ],
     income: [
@@ -310,6 +309,7 @@
       { id: "famille", label: "Famille / cadeaux", icon: "🎁", color: "#f472b6" },
       { id: "vente", label: "Vente", icon: "🏷️", color: "#fbbf24" },
       { id: "remb", label: "Rembour\u00ADsement", icon: "↩️", color: "#a78bfa" }, // \u00AD = césure seulement si ça ne tient pas
+      { id: "vir_recu", label: "Virements reçus", icon: "📥", color: "#38bdf8" },
       { id: "epargne_r", label: "Depuis l'épargne", icon: "🏦", color: "#2dd4bf" },
       { id: "autre_r", label: "Autre", icon: "•", color: "#94a3b8" }
     ]
@@ -322,24 +322,32 @@
   const INTERNAL = new Set(["epargne", "epargne_r"]);
 
   // Règles par défaut pour classer les libellés bancaires (appliquées sur le libellé normalisé)
+  // Règles par défaut pour classer les libellés bancaires, testées dans l'ordre sur le libellé normalisé
+  // (majuscules, sans accents ni ponctuation). Sans \b, un mot est aussi trouvé dans un nom collé : MAXICOFFEE contient COFFEE.
   const DEFAULT_RULES = [
-    [/CARREFOUR|LECLERC|LIDL|AUCHAN|INTERMARCHE|SUPER U|HYPER U|SYSTEME U|\bU EXPRESS|MONOPRIX|FRANPRIX|ALDI|CASINO|NETTO|PICARD|GRAND FRAIS|BIOCOOP|\bSPAR\b|COCCINELLE|LEADER PRICE|DRIVE/, "courses", "expense"],
-    [/LOYER|FONCIA|NEXITY|CROUS.*LOGEMENT|EDF|ENGIE|TOTALENERGIES ELEC|VEOLIA|SAUR|ASSURANCE HABITATION|HABITAT/, "logement", "expense"],
-    [/SNCF|OUIGO|\bTER\b|RATP|NAVIGO|TISSEO|\bSTAR\b|KEOLIS|BLABLACAR|UBER(?! EATS)|\bBOLT\b|\bTOTAL\b|TOTALENERGIES|ESSO|SHELL|\bBP\b|\bAVIA\b|STATION|CARBURANT|PEAGE|SANEF|VINCI AUTOROUTE|APRR|PARKING|INDIGO|MACIF AUTO|NORAUTO|FEU VERT|SPEEDY/, "transport", "expense"],
-    [/MCDO|MC DONALD|MCDONALD|BURGER KING|KFC|\bQUICK\b|SUBWAY|DOMINO|PIZZA|KEBAB|TACOS|O TACOS|UBER EATS|DELIVEROO|JUST EAT|RESTAU|BRASSERIE|\bBAR\b|CAFE|STARBUCKS|BOULANGERIE|SUSHI/, "restau", "expense"],
-    [/NETFLIX|SPOTIFY|DEEZER|DISNEY|PRIME VIDEO|AMAZON PRIME|CANAL|YOUTUBE|APPLE COM|ITUNES|GOOGLE ?PLAY|FREE MOBILE|FREE TELECOM|ORANGE|SFR|BOUYGUES|SOSH|RED BY|B AND YOU|OPENAI|CHATGPT|CLAUDE|ANTHROPIC|ICLOUD|XBOX GAME PASS|PLAYSTATION PLUS|SALLE DE SPORT|BASIC FIT|FITNESS PARK|ON AIR/, "abos", "expense"],
-    [/STEAM|PLAYSTATION|NINTENDO|XBOX|INSTANT GAMING|FNAC|CULTURA|CINEMA|PATHE|GAUMONT|UGC|MEGARAMA|DECATHLON|CONCERT|TICKETMASTER/, "loisirs", "expense"],
-    [/PHARMACIE|PHARMA|MEDECIN|DOCTOLIB|DENTISTE|OPTIC|MUTUELLE|LABORATOIRE|CLINIQUE|HOPITAL/, "sante", "expense"],
-    [/AMAZON|ZALANDO|SHEIN|VINTED|ZARA|\bH M\b|PRIMARK|KIABI|CELIO|JULES|\bACTION\b|IKEA|LEROY MERLIN|CASTORAMA|BOULANGER|DARTY|LDLC|CDISCOUNT|ALIEXPRESS|TEMU/, "shopping", "expense"],
-    [/LIBRAIRIE|GIBERT|UNIVERSITE|\bIUT\b|SCOLARITE|CVEC|PARCOURSUP/, "etudes", "expense"],
-    [/LIVRET|EPARGNE|\bPEA\b|ASSURANCE VIE/, "epargne", "expense"],
-    [/LIVRET|EPARGNE|\bLDDS?\b|\bLEP\b/, "epargne_r", "income"],
-    [/SALAIRE|\bPAIE\b|\bPAYE\b|REMUNERATION|ALTERNANCE|APPRENTI/, "salaire", "income"],
-    [/\bCAF\b|C A F|ALLOCATION|\bAPL\b|CROUS|BOURSE|PRIME ACTIVITE|FRANCE TRAVAIL|POLE EMPLOI|CPAM|AMELI|DGFIP|IMPOT REMB/, "aides", "income"],
-    [/VINTED|LEBONCOIN|LE BON COIN/, "vente", "income"],
-    [/REMBOURSEMENT|\bREMB\b|AVOIR|LYDIA|PAYPAL|WERO|PAYLIB/, "remb", "income"]
+    [/\bRETRAIT\b|\bDAB\b|\bGAB\b|DISTRIBUTEUR/, "especes", "expense"],
+    [/CARREFOUR|LECLERC|LIDL|AUCHAN|INTERMARCH|SUPER U|HYPER U|SYSTEME U|\bU EXPRESS|MONOPRIX|FRANPRIX|\bALDI\b|CASINO|NETTO|PICARD|GRAND FRAIS|BIOCOOP|NATURALIA|LA VIE CLAIRE|\bSPAR\b|COCCINELLE|LEADER PRICE|\bDRIVE\b|\bG20\b|PROXI|VIVAL|\bCORA\b|\bMATCH\b|COLRUYT|EPICERIE|PRIMEUR|BOUCHERIE|FROMAGERIE|POISSONNERIE|SUPERMARCHE|HYPERMARCHE|\bMARCHE\b|\bMARKET\b|MAXICOFFEE|NESPRESSO|THIRIET/, "courses", "expense"],
+    [/MCDO|MC DONALD|MCDONALD|BURGER|\bKFC\b|\bQUICK\b|SUBWAY|DOMINO|PIZZ|KEBAB|TACOS|UBER ?EATS|DELIVEROO|JUST ?EAT|RESTAU|\bRESTO\b|BRASSERIE|BISTRO|\bBAR\b|\bPUB\b|CAFE|COFFEE|STARBUCKS|BOULANGERIE|PATISS|SUSHI|\bFOOD|SNACK|CREPERIE|GRILL|\bWOK\b|RAMEN|NOODLE|\bPOKE\b|BAGEL|BRIOCHE DOREE|\bPAUL\b|COLUMBUS|FIVE GUYS|COURTEPAILLE|HIPPOPOTAMUS|DEL ARTE|FLUNCH|IZLY|CAFET|CANTINE|TRAITEUR|CHICKEN|FRITERIE|BUBBLE TEA|GLACIER|DUNKIN/, "restau", "expense"],
+    [/LOYER|FONCIA|NEXITY|CROUS|EDF|ENGIE|TOTALENERGIES ELEC|EKWATEUR|MINT ENERGIE|OHM ENERGIE|PLANETE OUI|IBERDROLA|VEOLIA|SUEZ|\bSAUR\b|\bEAU\b|ASSURANCE HABITATION|MULTIRISQUE|LUKO|LEMONADE|HABITAT|SYNDIC|IMMOBILIER|STUDAPART|LOKAVIZ|VISALE/, "logement", "expense"],
+    [/SNCF|OUIGO|TRAINLINE|\bTER\b|\bTGV\b|RATP|NAVIGO|TISSEO|\bSTAR\b|KEOLIS|TRANSDEV|ILEVIA|\bTCL\b|\bRTM\b|\bTBM\b|TRANSPORT|\bBUS\b|\bTRAM\b|METRO|FLIXBUS|BLABLA ?CAR|UBER|\bBOLT\b|HEETCH|\bG7\b|FREE ?NOW|TAXI|\bLIME\b|\bDOTT\b|VELIB|\bVELO|\bTOTAL\b|TOTALENERGIES|ESSO|SHELL|\bBP\b|\bAVIA\b|STATION|CARBURANT|ESSENCE|GAZOLE|PEAGE|SANEF|AUTOROUTE|APRR|\bULYS\b|PARKING|INDIGO|EUROPCAR|\bAVIS\b|HERTZ|\bSIXT\b|GETAROUND|AIR FRANCE|EASYJET|RYANAIR|TRANSAVIA|VUELING|VOLOTEA|AEROPORT|PERMIS|AUTO ECOLE|ORNIKAR|CONTROLE TECHNIQUE|CARGLASS|MIDAS|NORAUTO|FEU VERT|SPEEDY|ANTAI|AMENDE/, "transport", "expense"],
+    [/NETFLIX|SPOTIFY|DEEZER|DISNEY|PRIME VIDEO|\bPRIME\b|CANAL|YOUTUBE|APPLE COM|ITUNES|GOOGLE ?PLAY|GOOGLE ONE|FREE MOBILE|FREE TELECOM|ORANGE|SFR|BOUYGUES|SOSH|RED BY|B AND YOU|LEBARA|LYCAMOBILE|SYMA|PRIXTEL|YOUPRICE|NRJ MOBILE|OPENAI|CHATGPT|CLAUDE|ANTHROPIC|ICLOUD|ADOBE|MICROSOFT|DROPBOX|NORDVPN|DUOLINGO|AUDIBLE|CRUNCHYROLL|TWITCH|PATREON|DAZN|XBOX GAME PASS|PLAYSTATION PLUS|SALLE DE SPORT|BASIC ?FIT|FITNESS|KEEP COOL|NEONESS|\bGYM\b|ON AIR|\bCOTIS|COTISATION|\bFRAIS\b|COMMISSION|AGIOS|TENUE DE COMPTE/, "abos", "expense"],
+    [/STEAM|PLAYSTATION|NINTENDO|XBOX|INSTANT GAMING|EPIC GAMES|RIOT|BLIZZARD|MICROMANIA|\bGAME|FNAC|CULTURA|CINEMA|\bCINE\b|PATHE|GAUMONT|\bUGC\b|\bCGR\b|KINEPOLIS|MEGARAMA|DECATHLON|INTERSPORT|GO SPORT|SPORT|PISCINE|BOWLING|LASER|ESCAPE|KARTING|MUSEE|THEATRE|CONCERT|FESTIVAL|BILLET|TICKETMASTER|SEE ?TICKETS|\bDICE\b|SHOTGUN|WEEZEVENT|HELLOASSO|EVENTBRITE|\bPARC\b|AIRBNB|BOOKING|HOTEL|CAMPING|VOYAGE|\bSKI\b/, "loisirs", "expense"],
+    [/PHARMA|MEDECIN|DOCTOLIB|DENTISTE|DENTAIRE|OPTIC|OPTIQUE|KRYS|AFFLELOU|MUTUELLE|LABORATOIRE|BIOLOGIE|RADIOLOG|CLINIQUE|HOPITAL|KINE|OSTEO|ORTHO|\bPSY|INFIRMIER|CENTRE MEDICAL/, "sante", "expense"],
+    [/AMAZON|ZALANDO|SHEIN|VINTED|ZARA|\bH M\b|PRIMARK|KIABI|CELIO|JULES|BRICE|\bACTION\b|IKEA|LEROY MERLIN|CASTORAMA|BRICO|\bBOULANGER\b|DARTY|LDLC|CDISCOUNT|ALIEXPRESS|TEMU|NIKE|ADIDAS|SNIPES|FOOT ?LOCKER|COURIR|UNIQLO|BERSHKA|PULL ?(AND )?BEAR|STRADIVARIUS|MANGO|SEPHORA|NOCIBE|MARIONNAUD|YVES ROCHER|DOUGLAS|\bLUSH\b|ETSY|EBAY|APPLE STORE|SAMSUNG|GEMO|LA HALLE|MAISONS DU MONDE|\bGIFI\b|\bHEMA\b|TIGER|CONFORAMA|JARDILAND|MAXI ZOO|ZOOPLUS|\bNORMAL\b|STOKOMANI|BACK ?MARKET|RAKUTEN/, "shopping", "expense"],
+    [/LIBRAIRIE|GIBERT|UNIVERSITE|\bIUT\b|SCOLARITE|CVEC|PARCOURSUP|PAPETERIE|BUREAU VALLEE|\bECOLE\b|CAMPUS|INSCRIPTION|TOEIC|COURSERA|UDEMY|OPENCLASSROOMS|IMPRIMERIE|PHOTOCOPIE/, "etudes", "expense"],
+    [/FLEURISTE|INTERFLORA|AQUARELLE|CADEAU|SMARTBOX|WONDERBOX|\bANNIV|\bNOEL\b/, "cadeaux", "expense"],
+    [/LIVRET|EPARGNE|\bPEA\b|ASSURANCE VIE|\bLDDS?\b|\bLEP\b|\bPEL\b|\bCEL\b/, "epargne", "expense"],
+    [/LIVRET|EPARGNE|\bLDDS?\b|\bLEP\b|\bPEL\b|\bCEL\b/, "epargne_r", "income"],
+    [/SALAIRE|\bPAIE\b|\bPAYE\b|REMUNERATION|ALTERNANCE|APPRENTI|GRATIFICATION|INDEMNITE DE STAGE|INTERIM|ADECCO|MANPOWER|RANDSTAD|STUDENTPOP|STAFFME/, "salaire", "income"],
+    [/\bCAF\b|C A F|ALLOCATION|\bAPL\b|CROUS|BOURSE|PRIME ACTIVITE|FRANCE TRAVAIL|POLE EMPLOI|\bMSA\b|CPAM|AMELI|DGFIP|IMPOT|TRESOR PUBLIC/, "aides", "income"],
+    [/\bPAPA\b|\bMAMAN\b|PARENTS|ARGENT DE POCHE|\bANNIV|\bNOEL\b|CADEAU/, "famille", "income"],
+    [/VINTED|LEBONCOIN|LE BON COIN|BACK ?MARKET|EBAY|RAKUTEN|VESTIAIRE/, "vente", "income"],
+    [/REMBOURSEMENT|\bREMB\b|AVOIR|LYDIA|PAYPAL|WERO|PAYLIB|REFUND|ANNULATION/, "remb", "income"]
   ];
-
+  // Virement (vers ou depuis une personne, Lydia, Wero…) : le nom de la personne ne doit pas être pris pour un commerçant
+  // ("VIR VERS PAUL" n'est pas la boulangerie Paul), seules les règles qui ont du sens pour un virement s'appliquent.
+  const RE_TRANSFER = /^(VIR|VIRT|VIREMENT)\b|\bVIR(EMENT)?\b.*\b(EMIS|RECU|VERS|DE|EN VOTRE FAVEUR)\b|\bLYDIA\b|\bWERO\b|\bPAYLIB\b/;
+  const TRANSFER_OK = new Set(["logement", "epargne", "epargne_r", "salaire", "aides", "famille", "vente", "remb", "cadeaux", "etudes", "sante"]);
   // Mots-clés reliant les actus à tes catégories de dépenses.
   // Comparés en mots entiers, sans accents ni majuscules. Féminin / pluriel acceptés sauf pour les mots de 3 lettres
   // ("caf" ne doit pas trouver "café"). Un "*" final = n'importe quel mot qui commence ainsi.
@@ -452,9 +460,13 @@
   function guessCat(label, type) {
     const key = labelKey(label), n = norm(label);
     for (const r of db.rules) if (r.type === type && r.kw && (key === r.kw || (" " + n + " ").includes(" " + r.kw + " "))) return r.cat;
-    for (const [re, cat, t] of DEFAULT_RULES) if (t === type && re.test(n)) return cat;
+    const transfer = RE_TRANSFER.test(n);
+    for (const [re, cat, t] of DEFAULT_RULES) if (t === type && (!transfer || TRANSFER_OK.has(cat)) && re.test(n)) return cat;
+    if (transfer) return type === "income" ? "vir_recu" : "virements";
+    if (type === "expense" && /\bPRLV\b|PRELEVEMENT|\bPRELEV\b|ECHEANCE/.test(n)) return "abos"; // prélèvement inconnu : le plus souvent un abonnement ou une facture
     return type === "income" ? "autre_r" : "autre_d";
   }
+
   function learnRule(tx) {
     const src = tx.label || tx.note;
     const kw = labelKey(src);
@@ -522,16 +534,16 @@
       const acc = balanceAt(todayStr());
       const toSavings = recurring.filter(r => !r.seenThisMonth && r.seenLastMonth && r.cat === "epargne").reduce((s, r) => s + r.amount, 0);
       out.push({ icon: "🔮", cls: projBal >= 0 ? "pos" : "neg",
-        text: `Fin de mois estimée : bilan ≈ <b>${projBal >= 0 ? "+" : ""}${fmt0(projBal)}</b>` + (acc !== null ? `, soit ≈ <b>${fmt0(acc - Math.max(0, projExp - t.exp - toSavings))}</b> en tout (compte + épargne)` : ""),
-        sub: `Estimation au rythme actuel des dépenses courantes${missingRec ? `, avec ${fmt0(missingRec)} de prélèvements récurrents pas encore passés` : ""}. Ne compte pas les revenus encore à venir.` });
+        text: `Fin de mois ≈ <b>${projBal >= 0 ? "+" : ""}${fmt0(projBal)}</b>` + (acc !== null ? `, soit <b>${fmt0(acc - Math.max(0, projExp - t.exp - toSavings))}</b> en tout` : ""),
+        sub: `Au rythme actuel, sans les revenus à venir.` });
     }
 
     // 2. Budgets dépassés ou presque
     for (const c of CATS.expense) {
       const b = db.budgets[c.id]; if (!b) continue;
       const s = spent[c.id] || 0, r = s / b;
-      if (r >= 1) out.push({ icon: "🚨", cls: "neg", text: `${c.label} : budget dépassé de <b>${fmt0(s - b)}</b>`, sub: `${fmt0(s)} dépensés pour ${fmt0(b)} prévus` });
-      else if (r >= 0.8) out.push({ icon: "⚠️", cls: "warn", text: `${c.label} : ${Math.round(r * 100)} % du budget utilisé`, sub: `Il reste ${fmt0(b - s)}` });
+      if (r >= 1) out.push({ icon: "🚨", cls: "neg", text: `${c.label} : budget dépassé de <b>${fmt0(s - b)}</b>` });
+      else if (r >= 0.8) out.push({ icon: "⚠️", cls: "warn", text: `${c.label} : ${Math.round(r * 100)} % du budget, reste ${fmt0(b - s)}` });
     }
 
     // 3. Écart par rapport à ta moyenne des 3 mois précédents
@@ -558,7 +570,7 @@
       const names = recurring.slice(0, 4).map(r => r.key.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())).join(", ");
       const abos = recurring.filter(r => r.cat === "abos").reduce((s, r) => s + r.amount, 0);
       out.push({ icon: "🔁", cls: "", text: `${recurring.length} dépense(s) récurrente(s) ≈ <b>${fmt0(tot)}/mois</b>`,
-        sub: `${esc(names)}${recurring.length > 4 ? "…" : "."}` + (abos ? ` Rien que les abonnements : ${fmt0(abos)}/mois, soit ${fmt0(abos * 12)} par an. Vérifie que tu utilises encore tout.` : "") });
+        sub: `${esc(names)}${recurring.length > 4 ? "…" : ""}` + (abos ? ` · abonnements ${fmt0(abos * 12)}/an` : "") });
     }
 
     // 5. Taux d'épargne
@@ -568,8 +580,7 @@
       const saved = realInc - (t.exp - (spent.epargne || 0));
       const rate = Math.round(saved / realInc * 100);
       out.push({ icon: rate >= 0 ? "💰" : "📉", cls: rate >= 10 ? "pos" : rate >= 0 ? "" : "neg",
-        text: rate >= 0 ? `Tu as gardé <b>${rate} %</b> de tes revenus ce mois` : `Tu as dépensé <b>${-rate} %</b> de plus que tes revenus ce mois`,
-        sub: `Calcul : revenus moins dépenses (l'argent mis en épargne compte comme gardé, celui repris dessus ne compte pas comme revenu)${isCurrent ? ", sur le mois en cours" : ""}.` });
+        text: rate >= 0 ? `Tu as gardé <b>${rate} %</b> de tes revenus` : `Tu as dépensé <b>${-rate} %</b> de plus que tes revenus` });
     }
     return out;
   }
@@ -672,9 +683,9 @@
     if (!b) {
       // Pas encore de solde : on le propose seulement sur le mois en cours
       card.style.display = isCur ? "block" : "none";
-      $("accLabel").textContent = "Ton argent (compte + épargne)";
+      $("accLabel").textContent = "Ton argent";
       $("accValue").textContent = "Indiquer"; $("accValue").className = "";
-      $("accSub").textContent = "Touche ici pour entrer tout ce que tu as : l'appli le fera évoluer ensuite.";
+      $("accSub").textContent = "Compte + épargne";
       $("accSav").style.display = "none";
       return;
     }
@@ -684,17 +695,14 @@
     card.style.display = "block";
     const upTo = isCur ? todayStr() : `${mk}-${pad(daysInMonth(view.y, view.m))}`;
     const v = balanceAt(upTo);
-    $("accLabel").textContent = isCur ? "Ton argent (compte + épargne)" : `Ton argent fin ${new Date(view.y, view.m, 1).toLocaleDateString("fr-FR", { month: "long" })}`;
+    $("accLabel").textContent = isCur ? "Ton argent" : `Ton argent fin ${new Date(view.y, view.m, 1).toLocaleDateString("fr-FR", { month: "long" })}`;
     $("accValue").textContent = fmt(v); $("accValue").className = v >= 0 ? "" : "neg";
     $("accSav").style.display = db.savings.length ? "block" : "none";
     if (db.savings.length) {
       const y = +upTo.slice(0, 4), sav = db.savings.reduce((a, x) => a + livretAt(x, upTo), 0);
-      $("accSav").textContent = `Dont épargne ${fmt(sav)}` + (isCur ? ` · intérêts ${y} ≈ ${fmt(db.savings.reduce((a, x) => a + yearInterest(x, y), 0))}, versés le 31/12` : "");
+      $("accSav").textContent = `Dont épargne ${fmt0(sav)}` + (isCur ? ` · intérêts ${y} ≈ ${fmt0(db.savings.reduce((a, x) => a + yearInterest(x, y), 0))}` : "");
     }
-    const after = db.transactions.filter(t => t.date > b.date && t.date <= upTo && !INTERNAL.has(t.cat)).length;
-    $("accSub").textContent = upTo >= b.date
-      ? `Ton total du ${dmy(b.date)}${after ? ` + ${after} opération(s) depuis` : ""}. Touche pour corriger.`
-      : `Calculé à rebours depuis ton total du ${dmy(b.date)}.`;
+    $("accSub").textContent = `Base du ${dmy(b.date)}`;
   }
   let balSign = 1;
   function setBalSign(sg) { balSign = sg; document.querySelectorAll("#balSeg button").forEach(x => x.classList.toggle("on", +x.dataset.sign === sg)); }
@@ -757,13 +765,13 @@
     const last = lastBackup();
     const age = last ? Math.floor((new Date(todayStr()) - new Date(last)) / 864e5) : null;
     $("backupBanner").innerHTML = db.transactions.length >= 10 && (age === null || age > 30)
-      ? `<div class="banner"><span>${age === null ? "Aucune sauvegarde de tes données pour l'instant" : `Dernière sauvegarde il y a ${age} jours`}</span><button id="btnBackupNow">Sauvegarder</button></div>` : "";
+      ? `<div class="banner"><span>${age === null ? "Pas encore de sauvegarde" : `Dernière sauvegarde il y a ${age} jours`}</span><button id="btnBackupNow">Sauvegarder</button></div>` : "";
     const bb = $("btnBackupNow"); if (bb) bb.onclick = exportData;
 
     const ins = computeInsights();
     $("insights").innerHTML = ins.length
       ? ins.map(i => `<div class="insight"><span>${i.icon}</span><div><span class="${i.cls}">${i.text}</span>${i.sub ? `<small>${i.sub}</small>` : ""}</div></div>`).join("")
-      : '<div class="empty">Ajoute quelques opérations (ou importe un relevé) pour voir les analyses.</div>';
+      : '<div class="empty">Pas encore d\'analyse.</div>';
 
     renderDonut(list);
     renderBars();
@@ -780,7 +788,7 @@
     const el = $("donut");
     const entries = Object.entries(spentByCat(list)).sort((a, b) => b[1] - a[1]);
     const total = entries.reduce((s, e) => s + e[1], 0);
-    if (!total) { el.innerHTML = '<div class="empty">Aucune dépense ce mois-ci</div>'; return; }
+    if (!total) { el.innerHTML = '<div class="empty">Aucune dépense</div>'; return; }
     const R = 54, C = 2 * Math.PI * R;
     let off = 0, arcs = "";
     for (const [cat, v] of entries) {
@@ -823,7 +831,7 @@
 
   function renderList(list) {
     const el = $("list");
-    if (!list.length) { el.innerHTML = '<div class="empty">Rien pour l\'instant. Appuie sur + pour ajouter une opération, ou importe un relevé depuis les réglages ⚙︎.</div>'; return; }
+    if (!list.length) { el.innerHTML = '<div class="empty">Aucune opération. + pour ajouter, ⚙︎ pour importer.</div>'; return; }
     const sorted = [...list].sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0));
     let html = "", lastDay = "";
     for (const t of sorted) {
@@ -924,16 +932,15 @@
     const el = $("newsList");
     if (!newsData || !newsData.items || !newsData.items.length) {
       $("newsMeta").textContent = "";
-      el.innerHTML = '<div class="empty">Pas encore d\'actus. Elles sont récupérées automatiquement toutes les 3 h une fois l\'appli en ligne (voir le guide).</div>';
+      el.innerHTML = '<div class="empty">Pas encore d\'actus.</div>';
       return;
     }
     const kws = myNewsKeywords();
     let items = newsData.items.filter(i => i && i.title && /^https?:\/\//.test(i.link || "")).map(i => ({ ...i, ...scoreNews(i, kws) }));
     if (newsMode === "mine") items = items.filter(i => i.score > 0).sort((a, b) => b.score - a.score || (b.date || "").localeCompare(a.date || ""));
     const up = newsData.updated ? new Date(newsData.updated) : null;
-    $("newsMeta").textContent = (up && !isNaN(up) ? `Mis à jour le ${up.toLocaleDateString("fr-FR")} à ${up.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}. ` : "")
-      + (newsMode === "mine" ? "Triées selon ce qui touche ton budget (prix, aides, taux… et tes plus grosses catégories de dépenses)." : "");
-    if (!items.length) { el.innerHTML = '<div class="empty">Aucune actu liée à ton budget en ce moment. Regarde l\'onglet « Tout ».</div>'; return; }
+    $("newsMeta").textContent = up && !isNaN(up) ? `Mis à jour le ${up.toLocaleDateString("fr-FR")} à ${up.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "";
+    if (!items.length) { el.innerHTML = '<div class="empty">Rien pour toi en ce moment, regarde « Tout ».</div>'; return; }
     el.innerHTML = items.slice(0, 40).map(i => {
       const d = i.date ? new Date(i.date) : null;
       const tags = i.cats && i.cats.length ? i.cats.map(c => `<span class="tag">${esc(catById(c).label)}</span>`).join("") : "";
@@ -996,7 +1003,7 @@
     if (form.editId) {
       const t = db.transactions.find(x => x.id === form.editId);
       const catChanged = t.cat !== form.cat;
-      Object.assign(t, { type: form.type, amount, cat: form.cat, date, note });
+      Object.assign(t, { type: form.type, amount, cat: form.cat, date, note, manual: true }); // manual : catégorie choisie par toi, on n'y touche plus
       msg = "Modifié";
       if (catChanged && t.label) {
         const n = learnRule(t);
@@ -1343,18 +1350,17 @@
           const res = parseStatement(pages);
           if (!res.ops.length) {
             diags.push(pdfDiagnostic(pages, res));
-            report.push(`❌ ${name} : aucune opération trouvée. La mise en page est sûrement différente de celle prévue : envoie-moi le diagnostic anonymisé.`);
+            report.push(`❌ ${name} : rien trouvé. Envoie le diagnostic.`);
             continue;
           }
           r = addImported(res.ops);
-          const msg = `${res.ops.length} opération(s)${res.end ? ` (relevé au ${res.end.toLocaleDateString("fr-FR")})` : ""}, ${r.added} ajoutée(s)${r.dup ? `, ${r.dup} déjà là` : ""}.`;
-          if (res.ok) report.push(`✅ ${name} : ${msg} Totaux identiques au relevé.`);
+          const msg = `${r.added} ajoutée(s)${r.dup ? `, ${r.dup} déjà là` : ""}.`;
+          if (res.ok) report.push(`✅ ${name} : ${msg}`);
           else if (res.tot.found) {
             diags.push(pdfDiagnostic(pages, res));
-            report.push(`⚠️ ${name} : ${msg} Mais les totaux ne collent pas avec le relevé (débits lus ${fmt(Math.round(res.read.deb * 100))} pour ${fmt(Math.round(res.tot.deb * 100))}, `
-              + `crédits lus ${fmt(Math.round(res.read.cred * 100))} pour ${fmt(Math.round(res.tot.cred * 100))}). Vérifie ce mois-là, et envoie-moi le diagnostic anonymisé.`);
-          } else report.push(`ℹ️ ${name} : ${msg} Total du relevé introuvable, vérification impossible.`);
-          if (res.others) report.push(`ℹ️ ${name} contient aussi ${res.others} autre(s) compte(s) (livret…) : seul le premier compte du relevé est importé.`);
+            report.push(`⚠️ ${name} : ${msg} Totaux différents du relevé (débits ${fmt(Math.round(res.read.deb * 100))} / ${fmt(Math.round(res.tot.deb * 100))}, `
+              + `crédits ${fmt(Math.round(res.read.cred * 100))} / ${fmt(Math.round(res.tot.cred * 100))}). Envoie le diagnostic.`);
+          } else report.push(`ℹ️ ${name} : ${msg} Totaux non vérifiés.`);
         } else {
           r = importBankCSV(await readText(f));
           report.push(`✅ ${name} : ${r.added} ajoutée(s)${r.dup ? `, ${r.dup} déjà là` : ""}${r.bad ? `, ${r.bad} ligne(s) illisible(s)` : ""}.`);
@@ -1363,7 +1369,7 @@
         if (r.lastDate && (!lastDate || r.lastDate > lastDate)) lastDate = r.lastDate;
       } catch (err) { report.push(`❌ ${name} : ${esc(err.message || "illisible")}`); }
     }
-    if (uncat) report.push(`${uncat} opération(s) à classer : touche « Classer » sur l'accueil.`);
+    if (uncat) report.push(`${uncat} à classer.`);
     $("toast").classList.remove("show");
     showImported(lastDate);
     $("setOverlay").classList.remove("open");
@@ -1411,7 +1417,7 @@
     for (const t of valid) if (!ids.has(t.id)) {
       db.transactions.push({ id: t.id, type: t.type, amount: t.amount, cat: t.cat, date: t.date,
         note: String(t.note || "").slice(0, 80), label: t.label ? String(t.label).slice(0, 140) : undefined,
-        src: t.src === "csv" ? "csv" : undefined, created: t.created || Date.now() });
+        src: t.src === "csv" ? "csv" : undefined, manual: t.manual === true || undefined, created: t.created || Date.now() });
       added++;
     }
     const bal = validBalance(d.balance);
@@ -1423,8 +1429,7 @@
   }
   function updateStorageInfo() {
     const last = lastBackup();
-    $("storageInfo").textContent = `${db.transactions.length} opération(s) et ${db.rules.length} règle(s) de classement sur cet appareil. `
-      + (last ? `Dernière sauvegarde exportée : ${last.split("-").reverse().join("/")}.` : "Aucune sauvegarde exportée pour l'instant.");
+    $("storageInfo").textContent = `${db.transactions.length} opérations · ` + (last ? `sauvegarde du ${last.split("-").reverse().join("/")}` : "jamais sauvegardé");
   }
 
   // ================= Événements =================
@@ -1489,7 +1494,7 @@
       const diag = pdfDiagnostic(pages, parseStatement(pages));
       $("toast").classList.remove("show");
       $("setOverlay").classList.remove("open");
-      showInfo("Diagnostic anonymisé", ["Les lettres sont remplacées par x et les chiffres par 9 : ni tes montants ni tes libellés n'apparaissent, seulement la place du texte sur la page. Tu peux me l'envoyer sans risque."], diag);
+      showInfo("Diagnostic anonymisé", ["Lettres → x, chiffres → 9 : rien de perso, tu peux l'envoyer."], diag);
       $("infoDiag").onclick();
     } catch (err) { toast(err.message || "PDF illisible", 4500); }
   };
@@ -1498,7 +1503,7 @@
     const t = $("infoText");
     try { await navigator.clipboard.writeText(t.value); }
     catch (err) { t.focus(); t.select(); document.execCommand("copy"); }
-    toast("Diagnostic copié : colle-le dans la conversation avec Claude");
+    toast("Diagnostic copié");
   };
   $("infoClose").onclick = closeSheet;
   $("btnWipe").onclick = () => arm($("btnWipe"), "Tout effacer", () => {
@@ -1514,6 +1519,15 @@
     render();
     fetchNews(false);
   });
+
+  // Opérations importées encore "à classer" (et pas modifiées par toi) : nouvel essai de classement automatique,
+  // utile quand les règles s'améliorent avec une mise à jour de l'appli
+  let reguessed = 0;
+  for (const t of db.transactions) if (t.src === "csv" && isUncat(t.cat) && !t.manual && t.label) {
+    const c = guessCat(t.label, t.type);
+    if (!isUncat(c)) { t.cat = c; reguessed++; }
+  }
+  if (reguessed) save();
 
   render();
   fetchNews(false); // en arrière-plan, pour avoir les actus en cache

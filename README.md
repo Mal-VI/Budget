@@ -32,7 +32,7 @@ Les virements entre ton compte et ton épargne ne changent pas ce total : ils so
 - **CSV** : l'export des opérations depuis le site de ta banque.
 - N'importe pas la même période en PDF et en CSV : les libellés diffèrent un peu, donc les opérations seraient en double.
 - Les doublons sont ignorés : tu peux réimporter une période qui se chevauche. Une opération importée que tu as supprimée ne revient pas non plus.
-- Les opérations non reconnues sont marquées « à classer ». Quand tu en classes une, l'appli retient le commerçant et classe automatiquement les mêmes la prochaine fois.
+- Classement automatique : d'abord le type d'opération (retrait → Espèces, virement vers ou depuis une personne → Virements, prélèvement inconnu → Abonnements), puis le commerçant, même collé dans un nom (MAXICOFFEE contient COFFEE). Pour un virement, le nom de la personne n'est jamais pris pour un magasin. Ce qui reste inconnu est marqué « à classer » : quand tu en classes une, l'appli retient le commerçant pour la suite. À chaque ouverture, les opérations encore « à classer » (que tu n'as pas modifiées) sont reclassées avec les règles à jour.
 - Relevé mal lu ? ⚙︎ > **Diagnostic anonymisé** : une version du PDF où les lettres deviennent x et les chiffres 9, qui ne garde que la position du texte. Elle permet de corriger la lecture sans voir tes données.
 
 ## Sauvegarde
