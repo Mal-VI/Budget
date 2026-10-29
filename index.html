@@ -289,7 +289,7 @@
 <script>
 (() => {
   "use strict";
-  const APP_VERSION = "12 (29/10)"; // à changer avec VERSION dans sw.js à chaque mise à jour
+  const APP_VERSION = "13 (29/10)"; // à changer avec VERSION dans sw.js à chaque mise à jour
 
   // ================= Catégories =================
   const CATS = {
@@ -484,10 +484,23 @@
     const words = norm(db.ownName).split(" ").filter(w => w.length > 1);
     return words.length > 0 && words.every(w => (" " + n + " ").includes(" " + w + " "));
   }
+  // Nom de la personne dans un libellé de virement ("Vir Inst vers Malvin Fontenit" -> "Malvin Fontenit"), ou ""
+  const NAME_SKIP = new Set(("VIREMENT VIR VIRT INST INSTANTANE VERS DE DU DES WEB SEPA EMIS RECU EN VOTRE FAVEUR M MR MME MLLE " +
+    "MONSIEUR MADAME PERMANENT COMPTE AU POUR REF MOTIF INTERNET MOBILE APPLI TRANSFER TO FROM PAYMENT").split(" "));
+  function nameFromLabel(label) {
+    const w = norm(label).split(" ").filter(x => x.length > 1 && !/\d/.test(x) && !NAME_SKIP.has(x));
+    return w.length >= 2 && w.length <= 3 ? w.map(x => x[0] + x.slice(1).toLowerCase()).join(" ") : "";
+  }
   // Reclasse les opérations importées que tu n'as pas modifiées toi-même, avec les règles actuelles
+  const BEFORE_OWN = new Set(["virements", "vir_recu", "autre_d", "autre_r"]);
   function reclassifyAuto() {
     let n = 0;
-    for (const t of db.transactions) if (t.src === "csv" && !t.manual && t.label) {
+    for (const t of db.transactions) if (t.src === "csv" && t.label) {
+      if (t.manual) {
+        // Choisie à la main avant que "Mes comptes" existe : un virement à ton nom y va quand même
+        if (BEFORE_OWN.has(t.cat) && isOwnName(norm(t.label))) { t.cat = "interne"; n++; }
+        continue;
+      }
       const c = guessCat(t.label, t.type);
       if (c !== t.cat && !(isUncat(c) && !isUncat(t.cat))) { t.cat = c; n++; }
     }
@@ -1035,8 +1048,12 @@
       Object.assign(t, { type: form.type, amount, cat: form.cat, date, note, manual: true }); // manual : catégorie choisie par toi, on n'y touche plus
       msg = "Modifié";
       if (catChanged && t.label) {
-        const n = learnRule(t);
-        msg = `Retenu : « ${labelKey(t.label).toLowerCase()} » → ${catById(t.cat).label}` + (n ? ` (+${n} autre(s) classée(s))` : "");
+        let n = learnRule(t);
+        msg = `Retenu : « ${labelKey(t.label).toLowerCase()} » → ${catById(t.cat).label}`;
+        // Un virement mis dans "Mes comptes" alors que ton nom est inconnu : le nom du libellé, c'est le tien
+        const nm = form.cat === "interne" && !db.ownName ? nameFromLabel(t.label) : "";
+        if (nm) { db.ownName = nm; n += reclassifyAuto(); msg = `Ton nom retenu : ${nm}`; }
+        if (n) msg += ` (+${n} autre(s) classée(s))`;
       }
     } else {
       db.transactions.push({ id: uid(), type: form.type, amount, cat: form.cat, date, note, created: Date.now() });
