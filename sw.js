@@ -1,6 +1,6 @@
 // Service worker : met l'appli en cache pour qu'elle marche hors ligne.
 // Change VERSION à chaque mise à jour pour forcer le rafraîchissement.
-const VERSION = "budget-v6";
+const VERSION = "budget-v7";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

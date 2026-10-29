@@ -21,7 +21,7 @@ Ouvre-la toujours depuis l'icône : c'est là que tes données sont stockées. S
 
 Sur l'accueil, touche **Ton argent** et entre le total que t'affiche ta banque : compte courant + épargne (Livret A…). L'appli ajoute ensuite les opérations datées d'après (importées ou ajoutées à la main). Quand tu regardes un mois passé, elle recalcule ce que tu avais à la fin du mois. Si le montant s'écarte du vrai, touche la case et retape ton total du jour.
 
-Les virements entre ton compte et ton épargne ne changent pas ce total : ils sont classés « Épargne » (vers l'épargne) ou « Depuis l'épargne » (retour sur le compte), souvent automatiquement. Les intérêts du livret ne sont pas suivis : corrige le total de temps en temps.
+Les virements entre ton compte et ton épargne ne changent pas ce total : ils sont classés « Épargne » (vers l'épargne) ou « Depuis l'épargne » (retour sur le compte), souvent automatiquement. Dans la même fenêtre, ajoute tes livrets (nom, montant, taux) : l'appli calcule les intérêts par quinzaines comme les banques (un versement rapporte à partir de la quinzaine suivante, un retrait ne rapporte plus dès le début de sa quinzaine) et les ajoute à ton total le 31 décembre. Quand un taux change (en général le 1er février et le 1er août), retape-le : le nouveau taux s'applique à partir de la date indiquée. C'est une estimation : corrige ton total en janvier avec le vrai montant.
 
 « Bilan du mois », c'est autre chose : tes revenus moins tes dépenses du mois.
 
