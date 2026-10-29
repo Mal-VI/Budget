@@ -51,3 +51,7 @@ Remplace les fichiers sur GitHub et change `VERSION` dans `sw.js`. L'appli récu
 Le tri « Pour toi » se fait sur le téléphone, d'après tes plus grosses catégories de dépenses. Rien de tes données ne part sur GitHub.
 
 À savoir : GitHub peut mettre en pause les tâches planifiées d'un dépôt resté inactif 60 jours. Dans ce cas, réactive-le dans l'onglet Actions.
+
+## Design
+
+Style inspiré des applis Apple en mode sombre (couleurs système d'iOS, listes groupées, chiffres arrondis). La police est celle du téléphone : sur iPhone, SF Pro et SF Pro Rounded, rien n'est téléchargé. Icônes : [Phosphor Icons](https://github.com/phosphor-icons/core) (licence MIT, voir `lib/ICONES.txt`), copiées dans `index.html` pour marcher hors ligne.
