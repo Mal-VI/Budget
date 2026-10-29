@@ -1,0 +1,6 @@
+[
+  { "name": "Service-Public.fr", "url": "https://www.service-public.gouv.fr/abonnements/rss/actu-actualites-particuliers.rss" },
+  { "name": "La finance pour tous", "url": "https://www.lafinancepourtous.com/feed/" },
+  { "name": "franceinfo Éco", "url": "https://www.francetvinfo.fr/economie.rss" },
+  { "name": "Le Monde Économie", "url": "https://www.lemonde.fr/economie/rss_full.xml" }
+]
