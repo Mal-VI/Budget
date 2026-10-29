@@ -1532,7 +1532,20 @@
   render();
   fetchNews(false); // en arrière-plan, pour avoir les actus en cache
 
-  if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    const hadSW = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+    // Mise à jour : à chaque retour dans l'appli, on vérifie s'il y a une nouvelle version. Si oui, le nouveau
+    // service worker prend la main et on recharge pour l'afficher (sauf si une fenêtre est ouverte, pour ne pas perdre une saisie).
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) navigator.serviceWorker.getRegistration().then(r => r && r.update()).catch(() => {});
+    });
+    let reloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadSW || reloading || document.querySelector(".overlay.open")) return;
+      reloading = true; location.reload();
+    });
+  }
 })();
 </script>
 </body>
