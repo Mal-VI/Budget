@@ -17,6 +17,15 @@ Le code est déjà sur GitHub (`Mal-VI/Budget`). Il reste 3 réglages, à faire 
 
 Ouvre-la toujours depuis l'icône : c'est là que tes données sont stockées. Safari et l'appli installée ne partagent pas les mêmes données sur iPhone.
 
+## Ce que fait l'appli
+
+- **Reste à vivre** (accueil, mois en cours) : revenus du mois moins les dépenses déjà faites, les prélèvements habituels pas encore passés et l'épargne prévue pour tes objectifs, avec le montant par jour jusqu'à la fin du mois. Si ton salaire n'est pas encore arrivé, la moyenne des mois d'avant est utilisée.
+- **Abonnements et prélèvements** : repérés tout seuls (même libellé, montant proche, une fois par mois), avec le jour habituel, ce qui reste à venir ce mois, le coût par an, et les hausses de prix.
+- **Rythme du mois** : tes dépenses cumulées jour après jour, comparées au mois précédent à la même date.
+- **Recherche** (loupe en haut) : par commerçant, note ou montant, avec le total trouvé ; sans recherche, les commerçants qui te coûtent le plus ce mois-ci.
+- **Objectifs d'épargne** (onglet Budgets) : montant visé, déjà de côté, date ; l'appli calcule combien mettre de côté par mois.
+- **Export en tableur** (réglages) : toutes tes opérations en CSV, lisible dans Excel ou Numbers.
+
 ## Ton argent (compte + épargne)
 
 Sur l'accueil, touche **Ton argent** et entre le total que t'affiche ta banque : compte courant + épargne (Livret A…). L'appli ajoute ensuite les opérations datées d'après (importées ou ajoutées à la main). Quand tu regardes un mois passé, elle recalcule ce que tu avais à la fin du mois. Si le montant s'écarte du vrai, touche la case et retape ton total du jour.

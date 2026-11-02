@@ -127,6 +127,8 @@
   .ch svg { margin-top: 10px; }
   svg text { fill: var(--label-2); font-size: 11px; font-family: -apple-system, system-ui, sans-serif; }
   .keys { display: flex; gap: 16px; margin-top: 6px; font-size: 13px; color: var(--label-2); }
+  .keys span { white-space: nowrap; }
+  .verdict { margin: 10px 0 0; font-size: 15px; font-weight: 600; }
   .keys i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
 
   /* Opérations */
@@ -252,6 +254,35 @@
   .version { text-align: center; color: var(--label-3); font-size: 13px; margin: 22px 0 0; line-height: 1.5; }
   button:focus-visible, .hero:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
+
+  /* Reste à vivre, abonnements, recherche, objectifs */
+  .safe { padding: 16px; margin-top: 12px; }
+  .safe .head { display: flex; align-items: center; gap: 10px; color: var(--label-2); font-size: 15px; font-weight: 600; }
+  .safe b { display: block; font-family: var(--rounded); font-size: 34px; font-weight: 700; margin: 10px 0 0; }
+  .safe .per { color: var(--label); font-size: 15px; margin-top: 2px; }
+  .safe small { display: block; color: var(--label-2); font-size: 13px; margin-top: 8px; line-height: 1.45; }
+  .rowcard { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; padding: 13px 16px; margin-top: 12px; text-align: left;
+    font-size: 16px; color: var(--label); }
+  .rowcard:active { background: var(--card-2); }
+  .rowcard .lbl { flex: 1; min-width: 0; }
+  .rowcard small, .cell .lbl small { display: block; color: var(--label-2); font-size: 13px; margin-top: 2px; }
+  .rowcard .chev { color: var(--label-3); }
+  .sheet.tall { min-height: 82vh; }
+  .searchbox { display: flex; align-items: center; gap: 8px; background: var(--fill); border-radius: 10px; padding: 0 10px; color: var(--label-2); margin: 2px 0 6px; }
+  .searchbox input { background: transparent; padding: 9px 0; font-size: 17px; border-radius: 0; }
+  .searchbox input:focus { box-shadow: none; }
+  .searchbox input::-webkit-search-cancel-button { filter: invert(1) opacity(.5); }
+  .cell.sub { padding-top: 9px; padding-bottom: 9px; }
+  .cell b.amt, .cell .amt { font-size: 16px; font-weight: 500; white-space: nowrap; }
+  .up { color: var(--orange); }
+  .subs-total { text-align: center; margin: 4px 0 6px; }
+  .subs-total b { display: block; font-family: var(--rounded); font-size: 40px; font-weight: 700; }
+  .subs-total small { color: var(--label-2); font-size: 15px; }
+  .goal .top .gamt { font-size: 15px; color: var(--label-2); white-space: nowrap; }
+  .goal .top .gamt b { color: var(--label); font-weight: 600; }
+  .goal { cursor: pointer; }
+  .bud + .cell::before { content: ""; position: absolute; top: 0; right: 0; left: 16px; height: .5px; background: var(--sep); }
+  .goal:active { background: var(--card-2); }
   .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%);
     background: rgba(58,58,60,.7); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); padding: 12px 18px; border-radius: 14px;
     font-size: 15px; font-weight: 500; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; max-width: 90vw; text-align: center;
@@ -264,6 +295,7 @@
   <header>
     <h1 id="pageTitle">Budget</h1>
     <div class="hbtns">
+      <button class="circle" id="btnSearch" aria-label="Rechercher"><svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/></svg></button>
       <button class="circle" id="btnSettings" aria-label="Réglages"><svg viewBox="0 0 256 256" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M237.94,107.21a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A111.92,111.92,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.63a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21ZM128,168a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z"/></svg></button>
     </div>
   </header>
@@ -290,10 +322,14 @@
     </section>
     <div id="uncatBanner"></div>
     <div id="backupBanner"></div>
+    <section class="card safe" id="safeCard" style="display:none"></section>
+    <button class="card rowcard" id="subsCard" style="display:none"><span class="sq" style="background:#40c8e0;width:30px;height:30px;border-radius:8px"><svg viewBox="0 0 256 256" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M24,128A72.08,72.08,0,0,1,96,56h96V40a8,8,0,0,1,13.66-5.66l24,24a8,8,0,0,1,0,11.32l-24,24A8,8,0,0,1,192,88V72H96a56.06,56.06,0,0,0-56,56,8,8,0,0,1-16,0Zm200-8a8,8,0,0,0-8,8,56.06,56.06,0,0,1-56,56H64V168a8,8,0,0,0-13.66-5.66l-24,24a8,8,0,0,0,0,11.32l24,24A8,8,0,0,0,64,216V200h96a72.08,72.08,0,0,0,72-72A8,8,0,0,0,224,120Z"/></svg></span><span class="lbl">Abonnements et prélèvements<small id="subsSub"></small></span><svg class="chev" viewBox="0 0 256 256" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></button>
     <div class="sh"><h2>Analyse</h2></div>
     <section class="card" id="insights"></section>
     <div class="sh"><h2>Dépenses</h2></div>
     <section class="card" id="donut"></section>
+    <div class="sh"><h2>Rythme du mois</h2></div>
+    <section class="card" id="pace"></section>
     <div class="sh"><h2>6 derniers mois</h2></div>
     <section class="card" id="bars"></section>
     <div class="sh"><h2 id="listTitle">Opérations</h2></div>
@@ -309,6 +345,8 @@
       </div>
       <div class="meter"><i id="bMeter"></i></div>
     </section>
+    <div class="sh"><h2>Objectifs</h2></div>
+    <section class="card" id="goalList"></section>
     <div class="sh"><h2>Par catégorie</h2></div>
     <section class="card" id="budgetList"></section>
   </div>
@@ -332,6 +370,39 @@
 </div>
   <button class="glass fab" id="btnAdd" aria-label="Ajouter une opération"><svg viewBox="0 0 256 256" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z"/></svg></button>
 </nav>
+
+<!-- Recherche -->
+<div class="overlay" id="searchOverlay">
+  <div class="sheet tall">
+    <div class="sbar"><span></span><h3>Rechercher</h3><button class="txtbtn strong" id="searchClose">OK</button></div>
+    <div class="searchbox"><svg viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/></svg><input id="searchInput" type="search" placeholder="Commerçant, note, montant…" autocomplete="off" aria-label="Rechercher"></div>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<!-- Abonnements et prélèvements -->
+<div class="overlay" id="subsOverlay">
+  <div class="sheet">
+    <div class="sbar"><span></span><h3>Abonnements</h3><button class="txtbtn strong" id="subsClose">OK</button></div>
+    <div id="subsBody"></div>
+  </div>
+</div>
+
+<!-- Objectif d'épargne -->
+<div class="overlay" id="goalOverlay">
+  <div class="sheet">
+    <div class="sbar"><button class="txtbtn" id="goalCancel">Annuler</button><h3 id="goalTitle">Objectif</h3><button class="txtbtn strong" id="goalSave">OK</button></div>
+    <div class="group">
+      <div class="cell"><label for="goalName">Nom</label><input id="goalName" placeholder="Voyage, permis…" maxlength="40"></div>
+      <div class="cell"><label for="goalTarget">Objectif</label><input id="goalTarget" inputmode="decimal" placeholder="1 000 €"></div>
+      <div class="cell"><label for="goalSaved">Déjà de côté</label><input id="goalSaved" inputmode="decimal" placeholder="0 €"></div>
+      <div class="cell"><label for="goalDate">Pour</label><input id="goalDate" type="month"></div>
+    </div>
+    <p class="foot">Avec une date, l'appli calcule combien mettre de côté chaque mois et le retire de ton reste à vivre.</p>
+    <div class="err" id="goalErr"></div>
+    <div class="group" id="goalDelRow"><button class="cell danger" id="goalDelete">Supprimer l'objectif</button></div>
+  </div>
+</div>
 
 <!-- Ajout / modification -->
 <div class="overlay" id="txOverlay">
@@ -394,6 +465,7 @@
       <button class="cell" id="btnImport"><span class="sq" style="background:var(--orange);width:30px;height:30px;border-radius:8px"><svg viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M228,128a100,100,0,0,1-98.66,100H128a99.39,99.39,0,0,1-68.62-27.29,12,12,0,0,1,16.48-17.45,76,76,0,1,0-1.57-109c-.13.13-.25.25-.39.37L54.89,92H72a12,12,0,0,1,0,24H24a12,12,0,0,1-12-12V56a12,12,0,0,1,24,0V76.72L57.48,57.06A100,100,0,0,1,228,128Z"/></svg></span><span class="lbl">Restaurer une sauvegarde</span><svg class="chev" viewBox="0 0 256 256" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></button>
     </div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+    <div class="group" style="margin-top:12px"><button class="cell" id="btnCsvExport"><span class="sq" style="background:var(--blue);width:30px;height:30px;border-radius:8px"><svg viewBox="0 0 256 256" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,176H96a8,8,0,0,1,0-16h64a8,8,0,0,1,0,16Zm0-32H96a8,8,0,0,1,0-16h64a8,8,0,0,1,0,16Zm-8-56V44l44,44Z"/></svg></span><span class="lbl">Exporter en tableur (CSV)</span><svg class="chev" viewBox="0 0 256 256" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></button></div>
     <p class="foot" id="storageInfo"></p>
     <div class="group" style="margin-top:24px"><button class="cell danger" id="btnWipe">Tout effacer</button></div>
     <p class="version"><span id="appVersion"></span><br>Tes données restent sur ce téléphone.</p>
@@ -416,7 +488,7 @@
 <script>
 (() => {
   "use strict";
-  const APP_VERSION = "18 (29/10)"; // à changer avec VERSION dans sw.js à chaque mise à jour
+  const APP_VERSION = "19 (02/11)"; // à changer avec VERSION dans sw.js à chaque mise à jour
 
   // ================= Catégories =================
   const CATS = {
@@ -511,7 +583,7 @@
   // hidden : identifiants des opérations importées puis supprimées, pour qu'un nouvel import ne les recrée pas
   // balance : argent total (compte + épargne) saisi à la main { amount: centimes (négatif possible), date: "AAAA-MM-JJ" }, ou null
   // savings : livrets compris dans ce total [{ id, name, amount: centimes à la même date, rates: [{ from: "AAAA-MM-JJ", rate: 1.7 }] }]
-  function blank() { return { version: 2, transactions: [], budgets: {}, rules: [], hidden: [], balance: null, savings: [], ownName: "" }; }
+  function blank() { return { version: 2, transactions: [], budgets: {}, rules: [], hidden: [], balance: null, savings: [], ownName: "", goals: [] }; }
   let interestMemo = new Map(); // intérêts déjà calculés, vidé à chaque modification des données
   function load() {
     try {
@@ -525,6 +597,7 @@
       d.balance = validBalance(d.balance);
       d.savings = d.balance ? validSavings(d.savings) : [];
       d.ownName = typeof d.ownName === "string" ? d.ownName.slice(0, 60) : "";
+      d.goals = validGoals(d.goals);
       d.version = 2;
       return d;
     } catch (e) {
@@ -668,9 +741,13 @@
       const vals = Object.values(byMonth);
       if (vals.length < 2 || Object.values(count).some(c => c > 1)) continue;
       const med = median(vals);
-      if (!vals.every(v => Math.abs(v - med) <= med * 0.15)) continue;
+      if (!vals.every(v => Math.abs(v - med) <= med * 0.25)) continue; // 25 % : une hausse de prix reste reconnue (et signalée)
       const curK = monthKey(y, m), p = shiftMonth(y, m, -1);
-      out.push({ key, amount: Math.round(med), seenThisMonth: !!byMonth[curK], seenLastMonth: !!byMonth[monthKey(p.y, p.m)], cat: list[list.length - 1].cat });
+      const byDate = [...list].sort((a, b) => a.date.localeCompare(b.date)), last = byDate[byDate.length - 1];
+      out.push({ key, amount: Math.round(med), seenThisMonth: !!byMonth[curK], seenLastMonth: !!byMonth[monthKey(p.y, p.m)], cat: last.cat,
+        // pour la liste des abonnements : jour habituel, dernier montant et le précédent (hausse de prix), libellé lisible
+        day: Math.round(median(byDate.map(t => +t.date.slice(8, 10)))), last: last.amount, prev: byDate.length > 1 ? byDate[byDate.length - 2].amount : last.amount,
+        label: last.note || prettyLabel(last.label || "") });
     }
     return out.sort((a, b) => b.amount - a.amount);
   }
@@ -763,7 +840,7 @@
   const TONE = { pos: "var(--green)", neg: "var(--red)", warn: "var(--orange)", info: "var(--blue)" };
   const INSIGHT_ICON = { "🔮": "calendar-blank", "🚨": "warning", "⚠️": "warning", "📈": "trend-up", "🔁": "repeat", "💰": "check-circle", "📉": "trend-down" };
   // Libellé bancaire lisible : "CB CARREFOUR MARKET 09/10" -> "Carrefour Market", "Vir Inst vers Malvin Fontenit" -> "Vers Malvin Fontenit"
-  const LABEL_NOISE = new Set("CB CARTE PAIEMENT PAIEM ACHAT PRLV PRELEVEMENT PRELEV SEPA VIR VIRT VIREMENT INST INSTANTANE WEB EMIS RECU FACT FACTURE ECH REF MANDAT".split(" "));
+  const LABEL_NOISE = new Set("CB CARTE PAIEMENT PAIEM ACHAT PRLV PRELEVEMENT PRELEV SEPA VIR VIRT VIREMENT INST INSTANTANE WEB EMIS RECU FACT FACTURE ECH REF MANDAT COM FR WWW SAS SARL EUR".split(" "));
   const SMALL_WORDS = new Set("DE DU DES LA LE LES ET AU AUX EN SUR VERS D L".split(" "));
   function prettyLabel(label) {
     const words = String(label || "").split(/\s+/).map(w => w.replace(/\*+\d*\**$/, "").replace(/^\*+/, "")).filter(w => {
@@ -988,7 +1065,10 @@
       ? ins.map(i => `<div class="insight t-${i.cls || "info"}">${sq({ color: TONE[i.cls || "info"], ic: INSIGHT_ICON[i.icon] || "check-circle" })}<div><div class="t">${i.text}</div>${i.sub ? `<small>${i.sub}</small>` : ""}</div></div>`).join("")
       : '<div class="empty">Pas encore d\'analyse.</div>';
 
+    renderSafe();
+    renderSubsCard();
     renderDonut(list);
+    renderPace();
     renderBars();
     if (showUncatOnly) {
       $("listTitle").textContent = "À classer (tous les mois)";
@@ -1060,7 +1140,215 @@
     el.innerHTML = html + "</div>";
   }
 
+  // ================= Reste à vivre =================
+  // Ce qu'il reste à dépenser d'ici la fin du mois : revenus du mois (ou moyenne des derniers mois s'ils ne sont pas
+  // encore arrivés), moins les dépenses déjà faites, les prélèvements habituels pas encore passés et l'épargne prévue
+  function safeToSpend() {
+    const y = now.getFullYear(), m = now.getMonth(), list = txOfMonth(y, m);
+    if (!list.length) return null;
+    const t = totals(list);
+    let inc = t.inc - list.filter(x => x.cat === "epargne_r").reduce((s, x) => s + x.amount, 0), estimated = false;
+    if (inc <= 0) {
+      const prev = [1, 2, 3].map(k => shiftMonth(y, m, -k)).map(p => totals(txOfMonth(p.y, p.m)).inc).filter(v => v > 0);
+      if (!prev.length) return null;
+      inc = Math.round(prev.reduce((a, b) => a + b, 0) / prev.length); estimated = true;
+    }
+    const upcoming = findRecurring(y, m).filter(r => !r.seenThisMonth && r.seenLastMonth).reduce((s, r) => s + r.last, 0); // au dernier prix connu
+    const savedThisMonth = list.filter(x => x.cat === "epargne").reduce((s, x) => s + x.amount, 0);
+    const planned = Math.max(0, db.goals.reduce((s, g) => s + monthlyNeed(g), 0) - savedThisMonth); // déjà viré sur l'épargne : pas compté deux fois
+    const daysLeft = daysInMonth(y, m) - now.getDate() + 1;
+    const left = inc - t.exp - upcoming - planned;
+    return { left, perDay: left / daysLeft, inc, exp: t.exp, upcoming, planned, estimated, dim: daysInMonth(y, m) };
+  }
+  function renderSafe() {
+    const card = $("safeCard"), isCur = view.y === now.getFullYear() && view.m === now.getMonth();
+    const r = isCur ? safeToSpend() : null;
+    if (!r) { card.style.display = "none"; return; }
+    card.style.display = "block";
+    const parts = [`Revenus ${fmt0(r.inc)}${r.estimated ? " (estimés d'après les mois d'avant)" : ""}`, `dépenses ${fmt0(r.exp)}`];
+    if (r.upcoming) parts.push(`${fmt0(r.upcoming)} de prélèvements à venir`);
+    if (r.planned) parts.push(`${fmt0(r.planned)} pour tes objectifs`);
+    card.innerHTML = `<div class="head">${sq({ color: "var(--green)", ic: "wallet" })}Reste à vivre</div>
+      <b class="${r.left < 0 ? "neg" : ""}">${fmt0(r.left)}</b>
+      <div class="per">${r.left > 0 ? `soit ${fmt0(r.perDay)} par jour jusqu'au ${r.dim}` : "Tu as déjà dépassé ce que tu peux dépenser ce mois-ci"}</div>
+      <small>${parts.join(" − ")}</small>`;
+  }
+
+  // ================= Abonnements et prélèvements =================
+  const subscriptions = () => findRecurring(now.getFullYear(), now.getMonth()).filter(r => r.cat !== "epargne");
+  function renderSubsCard() {
+    const subs = subscriptions(), btn = $("subsCard");
+    btn.style.display = subs.length ? "flex" : "none";
+    if (!subs.length) return;
+    const total = subs.reduce((s, r) => s + r.last, 0), soon = subs.filter(r => !r.seenThisMonth && r.seenLastMonth).length;
+    $("subsSub").textContent = `≈ ${fmt0(total)} par mois` + (soon ? ` · ${soon} à venir ce mois` : "");
+  }
+  function openSubs() {
+    const subs = subscriptions(), total = subs.reduce((s, r) => s + r.last, 0);
+    const row = r => {
+      const c = catById(r.cat), up = r.last > r.prev * 1.03 ? `<span class="up"> · en hausse de ${fmt(r.last - r.prev)}</span>` : "";
+      return `<div class="cell sub">${sq(c, 30)}<span class="lbl">${esc(r.label || r.key)}<small>le ${r.day} de chaque mois${up}</small></span><b class="amt">${fmt(r.last)}</b></div>`;
+    };
+    const soon = subs.filter(r => !r.seenThisMonth && r.seenLastMonth).sort((a, b) => a.day - b.day);
+    $("subsBody").innerHTML = subs.length
+      ? `<div class="subs-total"><b>${fmt0(total)}</b><small>par mois · ${fmt0(total * 12)} par an</small></div>`
+        + (soon.length ? `<div class="ghead">À venir ce mois</div><div class="group">${soon.map(row).join("")}</div>` : "")
+        + `<div class="ghead">Tous</div><div class="group">${subs.map(row).join("")}</div>`
+        + `<p class="foot">Repérés automatiquement : même libellé, montant proche, une fois par mois. Vérifie que tu utilises encore tout.</p>`
+      : '<div class="empty">Aucun prélèvement régulier repéré pour l\'instant.</div>';
+    openSheet("subsOverlay");
+  }
+
+  // ================= Rythme du mois =================
+  // Dépenses cumulées jour par jour, comparées au mois précédent à la même date
+  function cumul(y, m, upTo) {
+    const dim = daysInMonth(y, m), perDay = new Array(dim + 1).fill(0);
+    for (const t of txOfMonth(y, m)) if (t.type === "expense" && counted(t)) perDay[+t.date.slice(8, 10)] += t.amount;
+    const out = []; let s = 0;
+    for (let d = 1; d <= Math.min(dim, upTo || dim); d++) { s += perDay[d]; out.push(s); }
+    return out;
+  }
+  function renderPace() {
+    const el = $("pace"), isCur = view.y === now.getFullYear() && view.m === now.getMonth();
+    const dim = daysInMonth(view.y, view.m), day = isCur ? now.getDate() : dim, p = shiftMonth(view.y, view.m, -1);
+    const cur = cumul(view.y, view.m, day), prev = cumul(p.y, p.m);
+    if (!cur[cur.length - 1] && !prev[prev.length - 1]) { el.innerHTML = '<div class="empty">Pas encore de dépenses à comparer.</div>'; return; }
+    const W = 320, H = 132, top = 6, base = 108, plotW = W - 36, days = Math.max(dim, prev.length);
+    const max = Math.max(1, ...cur, ...prev);
+    const X = d => (d - 1) / (days - 1) * plotW, Y = v => base - v / max * (base - top);
+    const line = arr => arr.map((v, i) => `${i ? "L" : "M"}${X(i + 1).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+    const curLine = line(cur), lastX = X(cur.length), lastY = Y(cur[cur.length - 1]);
+    let g = "";
+    for (const f of [1, .5]) { const yy = base - f * (base - top); g += `<line x1="0" x2="${plotW}" y1="${yy}" y2="${yy}" stroke="var(--sep)" stroke-dasharray="2 3"/><text x="${W}" y="${yy + 4}" text-anchor="end">${fmtShort(max * f)} €</text>`; }
+    for (const d of [1, 15, days]) g += `<text x="${X(d)}" y="${base + 18}" text-anchor="${d === 1 ? "start" : d === days ? "end" : "middle"}">${d}</text>`;
+    const now$ = cur[cur.length - 1], then = prev.length ? prev[Math.min(day, prev.length) - 1] : 0;
+    const diff = then ? Math.round((now$ / then - 1) * 100) : null;
+    const month = new Date(p.y, p.m, 1).toLocaleDateString("fr-FR", { month: "long" });
+    const verdict = diff === null ? "" : diff > 5 ? `<span class="neg">Plus rapide qu'en ${month} (+${diff} %)</span>`
+      : diff < -5 ? `<span class="pos">Plus lent qu'en ${month} (${diff} %)</span>` : `<span>Au même rythme qu'en ${month}</span>`;
+    el.innerHTML = `<div class="ch"><div class="ch-head"><small>${isCur ? `Dépensé au ${day}` : "Dépensé sur le mois"}</small><b>${fmt0(now$)}</b><span> · ${month} : ${fmt0(then)}</span></div>
+      <svg viewBox="0 0 ${W} ${H}" width="100%"><defs><linearGradient id="paceFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#0a84ff" stop-opacity=".35"/><stop offset="1" stop-color="#0a84ff" stop-opacity="0"/></linearGradient></defs>
+        ${g}<line x1="0" x2="${plotW}" y1="${base + .5}" y2="${base + .5}" stroke="var(--sep)"/>
+        <path d="${line(prev)}" fill="none" stroke="var(--gray)" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round"/>
+        <path d="${curLine}L${lastX.toFixed(1)},${base}L0,${base}Z" fill="url(#paceFill)"/>
+        <path d="${curLine}" fill="none" stroke="var(--blue)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${lastX}" cy="${lastY}" r="4.5" fill="var(--blue)" stroke="var(--card)" stroke-width="2"/></svg>
+      <div class="keys"><span><i style="background:var(--blue)"></i>Ce mois</span><span><i style="background:var(--gray)"></i>${month[0].toUpperCase() + month.slice(1)}</span></div>
+      ${verdict ? `<p class="verdict">${verdict}</p>` : ""}</div>`;
+  }
+
+  // ================= Recherche =================
+  function openSearch() { $("searchInput").value = ""; renderSearch(); openSheet("searchOverlay"); setTimeout(() => $("searchInput").focus(), 80); }
+  const txTitle = t => t.note || (t.label ? prettyLabel(t.label) : catById(t.cat).label);
+  function searchRow(t) {
+    const c = catById(t.cat), inc = t.type === "income", own = t.cat === "interne";
+    return `<div class="tx" data-id="${esc(t.id)}">${sq(c, 34)}<div class="info"><div class="t">${esc(txTitle(t))}</div>
+      <small>${t.date.split("-").reverse().join("/")} · ${esc(c.label)}</small></div>
+      <div class="amt ${own ? "muted" : inc ? "pos" : ""}">${own ? "⇄ " : inc ? "+" : "-"}${fmt(t.amount)}</div></div>`;
+  }
+  function renderSearch() {
+    const el = $("searchResults"), raw = $("searchInput").value.trim(), q = foldText(raw);
+    if (!q) {
+      // Sans recherche : où part l'argent ce mois-ci (commerçants qui coûtent le plus)
+      const by = {};
+      for (const t of txOfMonth(view.y, view.m)) if (t.type === "expense" && counted(t)) {
+        const k = txTitle(t); (by[k] = by[k] || { n: 0, s: 0, cat: t.cat }); by[k].n++; by[k].s += t.amount;
+      }
+      const top = Object.entries(by).sort((a, b) => b[1].s - a[1].s).slice(0, 8);
+      const month = new Date(view.y, view.m, 1).toLocaleDateString("fr-FR", { month: "long" });
+      el.innerHTML = top.length ? `<div class="ghead">Où part ton argent en ${month}</div><div class="group">${top.map(([k, v]) =>
+        `<button class="cell sub" data-q="${esc(k)}">${sq(catById(v.cat), 30)}<span class="lbl">${esc(k)}<small>${v.n} fois</small></span><b class="amt">${fmt0(v.s)}</b></button>`).join("")}</div>`
+        : '<div class="empty">Tape le nom d\'un commerçant, une note ou un montant.</div>';
+      return;
+    }
+    const cents = /^\d+([.,]\d{1,2})?$/.test(raw) ? Math.round(parseNum(raw) * 100) : null;
+    const res = db.transactions.filter(t => cents !== null ? t.amount === cents
+      : foldText([t.label, t.note, txTitle(t), catById(t.cat).label].join(" ")).includes(q)).sort((a, b) => b.date.localeCompare(a.date));
+    if (!res.length) { el.innerHTML = '<div class="empty">Aucune opération trouvée.</div>'; return; }
+    const out = res.filter(t => t.type === "expense" && counted(t)).reduce((s, t) => s + t.amount, 0);
+    const inn = res.filter(t => t.type === "income" && counted(t)).reduce((s, t) => s + t.amount, 0);
+    el.innerHTML = `<p class="foot" style="margin:6px 4px 10px">${res.length} opération(s)${out ? ` · ${fmt(out)} dépensés` : ""}${inn ? ` · ${fmt(inn)} reçus` : ""}</p>
+      <div class="card" style="background:var(--card-2)">${res.slice(0, 150).map(searchRow).join("")}</div>`;
+  }
+
+  // ================= Objectifs d'épargne =================
+  function validGoals(a) {
+    return (Array.isArray(a) ? a : []).filter(g => g && typeof g.name === "string" && Number.isInteger(g.target) && g.target > 0)
+      .map(g => ({ id: String(g.id || "g" + Math.random().toString(36).slice(2, 9)), name: g.name.slice(0, 40), target: g.target,
+        saved: Number.isInteger(g.saved) && g.saved >= 0 ? g.saved : 0, date: /^\d{4}-\d{2}$/.test(g.date || "") ? g.date : "" }));
+  }
+  // Mois restants jusqu'à la date de l'objectif (le mois en cours compris), 0 sans date
+  function monthsLeft(g) {
+    if (!g.date) return 0;
+    const [y, m] = g.date.split("-").map(Number);
+    return (y - now.getFullYear()) * 12 + (m - 1 - now.getMonth()) + 1;
+  }
+  function monthlyNeed(g) { const rest = g.target - g.saved, n = monthsLeft(g); return rest > 0 && n > 0 ? Math.ceil(rest / n) : 0; }
+  function renderGoals() {
+    const rows = db.goals.map(g => {
+      const r = Math.min(1, g.saved / g.target), n = monthsLeft(g), need = monthlyNeed(g);
+      const meta = g.saved >= g.target ? '<span class="pos">Objectif atteint</span>'
+        : need ? `<span>${fmt0(need)} par mois pendant ${n} mois</span>` : g.date ? '<span class="warn">Date dépassée</span>' : "<span>Sans date</span>";
+      return `<div class="bud goal" data-goal="${esc(g.id)}"><div class="top">${sq({ color: "#66d4cf", ic: "piggy-bank" }, 30)}<span class="nm">${esc(g.name)}</span>
+        <span class="gamt"><b>${fmt0(g.saved)}</b> / ${fmt0(g.target)}</span></div>
+        <div class="bar"><i style="width:${r * 100}%;background:${r >= 1 ? "var(--green)" : "#66d4cf"}"></i></div>
+        <div class="meta"><span>${Math.round(r * 100)} %</span>${meta}</div></div>`;
+    }).join("");
+    $("goalList").innerHTML = rows + `<button class="cell accent" id="goalNew">Nouvel objectif</button>`;
+  }
+  let goalEdit = null;
+  const centsIn = c => c ? (c / 100).toString().replace(".", ",") : "";
+  function openGoal(id) {
+    const g = db.goals.find(x => x.id === id);
+    goalEdit = g ? g.id : null;
+    $("goalTitle").textContent = g ? "Objectif" : "Nouvel objectif";
+    $("goalName").value = g ? g.name : ""; $("goalTarget").value = g ? centsIn(g.target) : "";
+    $("goalSaved").value = g ? centsIn(g.saved) : ""; $("goalDate").value = g ? g.date : "";
+    $("goalErr").textContent = "";
+    $("goalDelRow").style.display = g ? "block" : "none";
+    disarm($("goalDelete"), "Supprimer l'objectif");
+    openSheet("goalOverlay");
+    if (!g) setTimeout(() => $("goalName").focus(), 80);
+  }
+  function saveGoal() {
+    const err = m => ($("goalErr").textContent = m);
+    const name = $("goalName").value.trim(), target = parseAmount($("goalTarget").value), savedRaw = $("goalSaved").value.trim();
+    const saved = !savedRaw || /^0+([.,]0*)?\s*€?$/.test(savedRaw) ? 0 : parseAmount(savedRaw), date = $("goalDate").value;
+    if (!name) return err("Donne un nom à ton objectif");
+    if (!target) return err("Montant de l'objectif invalide (ex : 1 000)");
+    if (saved === null) return err("Montant déjà de côté invalide");
+    const g = { id: goalEdit || uid(), name, target, saved, date: /^\d{4}-\d{2}$/.test(date) ? date : "" };
+    db.goals = goalEdit ? db.goals.map(x => x.id === goalEdit ? g : x) : db.goals.concat(g);
+    save(); closeSheet(); render(); toast(goalEdit ? "Objectif modifié" : "Objectif ajouté");
+  }
+
+  // ================= Export tableur =================
+  async function shareOrDownload(blob, name, type) {
+    // Feuille de partage si possible ("Enregistrer dans Fichiers", Drive…) : dans une appli installée
+    // sur iPhone, le téléchargement direct d'un fichier marche mal. Sinon, téléchargement classique.
+    try {
+      const file = new File([blob], name, { type });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); return true; }
+    } catch (e) {
+      if (e.name === "AbortError") return false; // partage annulé
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    return true;
+  }
+  async function exportCSV() {
+    const cell = v => /[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    const rows = [["Date", "Libellé", "Catégorie", "Montant", "Note"]].concat([...db.transactions].sort((a, b) => a.date.localeCompare(b.date)).map(t => [
+      t.date.split("-").reverse().join("/"), t.label ? prettyLabel(t.label) : "", catById(t.cat).label.replace("­", ""),
+      ((t.type === "income" ? 1 : -1) * t.amount / 100).toFixed(2).replace(".", ","), t.note || ""]));
+    const csv = "﻿" + rows.map(r => r.map(v => cell(String(v))).join(";")).join("\r\n"); // ﻿ : Excel lit bien les accents
+    if (await shareOrDownload(new Blob([csv], { type: "text/csv" }), `budget-operations-${todayStr()}.csv`, "text/csv")) toast("Export prêt");
+  }
+
   function renderBudgets() {
+    renderGoals();
     const spent = spentByCat(txOfMonth(view.y, view.m));
     const cats = CATS.expense.filter(c => c.id !== "interne"); // "Mes comptes" ne compte jamais
     const row = c => {
@@ -1608,25 +1896,8 @@
   // ================= Sauvegarde =================
   function lastBackup() { try { return localStorage.getItem("budget.lastBackup"); } catch (e) { return null; } }
   async function exportData() {
-    const name = `budget-sauvegarde-${todayStr()}.json`;
     const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
-    // Feuille de partage si possible ("Enregistrer dans Fichiers", Drive…) : dans une appli installée
-    // sur iPhone, le téléchargement direct d'un fichier marche mal. Sinon, téléchargement classique.
-    try {
-      const file = new File([blob], name, { type: "application/json" });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: name });
-        return backupDone();
-      }
-    } catch (e) {
-      if (e.name === "AbortError") return; // partage annulé
-    }
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    backupDone();
+    if (await shareOrDownload(blob, `budget-sauvegarde-${todayStr()}.json`, "application/json")) backupDone();
   }
   function backupDone() {
     try { localStorage.setItem("budget.lastBackup", todayStr()); } catch (e) {}
@@ -1652,6 +1923,7 @@
     const bal = validBalance(d.balance);
     if (bal && (!db.balance || bal.date > db.balance.date)) { db.balance = bal; db.savings = validSavings(d.savings); }
     if (!db.ownName && typeof d.ownName === "string") db.ownName = d.ownName.slice(0, 60);
+    for (const g of validGoals(d.goals)) if (!db.goals.some(x => x.id === g.id)) db.goals.push(g);
     if (d.budgets && typeof d.budgets === "object") for (const [k, v] of Object.entries(d.budgets)) if (Number.isInteger(v) && v > 0 && CATS.expense.some(c => c.id === k)) db.budgets[k] = v;
     if (Array.isArray(d.rules)) for (const r of d.rules) if (r && r.kw && r.cat && r.type && !db.rules.some(x => x.kw === r.kw && x.type === r.type)) db.rules.push({ kw: String(r.kw), cat: String(r.cat), type: r.type });
     save();
@@ -1821,6 +2093,28 @@
     if (n) toast(`${n} opération(s) reclassée(s)`);
   };
   $("appVersion").textContent = "Version " + APP_VERSION;
+  $("btnSearch").onclick = openSearch;
+  $("searchClose").onclick = closeSheet;
+  $("searchInput").addEventListener("input", renderSearch);
+  $("searchResults").onclick = e => {
+    const q = e.target.closest("[data-q]");
+    if (q) { $("searchInput").value = q.dataset.q; renderSearch(); return; }
+    const row = e.target.closest(".tx"); if (!row) return;
+    const t = db.transactions.find(x => x.id === row.dataset.id);
+    if (t) { $("searchOverlay").classList.remove("open"); openForm(t); } // la fiche remplace la recherche
+  };
+  $("subsCard").onclick = openSubs;
+  $("subsClose").onclick = closeSheet;
+  $("goalList").onclick = e => {
+    if (e.target.closest("#goalNew")) return openGoal(null);
+    const g = e.target.closest("[data-goal]"); if (g) openGoal(g.dataset.goal);
+  };
+  $("goalCancel").onclick = closeSheet;
+  $("goalSave").onclick = saveGoal;
+  $("goalDelete").onclick = () => arm($("goalDelete"), "Supprimer l'objectif", () => {
+    db.goals = db.goals.filter(g => g.id !== goalEdit); save(); closeSheet(); render(); toast("Objectif supprimé");
+  });
+  $("btnCsvExport").onclick = exportCSV;
   $("btnSettings").onclick = () => { $("ownName").value = db.ownName; updateStorageInfo(); disarm($("btnWipe"), "Tout effacer"); openSheet("setOverlay"); };
   $("setClose").onclick = closeSheet;
   $("btnExport").onclick = exportData;
