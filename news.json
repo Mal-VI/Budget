@@ -1,19 +1,103 @@
 {
- "updated": "2026-11-20T03:59:56+00:00",
+ "updated": "2026-11-20T07:25:40+00:00",
  "items": [
   {
-   "title": "Les députés votent une « petite avancée » contre la vie chère en outre-mer",
+   "title": "Une facture de 207 millions pour les violences urbaines du 17 et 18 octobre",
+   "link": "https://www.franceinfo.fr/replay-radio/le-decryptage-eco/une-facture-de-207-millions-pour-les-violences-urbaines-du-17-et-18-octobre_8270111.html#xtor=RSS-3-%5Beconomie%5D",
+   "summary": "Les violences et pillages survenus en marge des mobilisations contre la vie chère les 17 et 18 octobre ont coûté 207 millions d'euros, selon France Assureurs. Les commerçants sont les principales victimes de ces…",
+   "source": "franceinfo Éco",
+   "date": "2026-11-20T07:05:01+00:00"
+  },
+  {
+   "title": "Vrai ou faux. La suppression de l'ISF n'a-t-elle eu qu'un effet \"marginal\" sur le retour des très riches en France ?",
+   "link": "https://www.franceinfo.fr/replay-radio/le-vrai-du-faux/vrai-ou-faux-la-suppression-de-l-isf-n-a-t-elle-eu-qu-un-effet-marginal-sur-le-retour-des-tres-riches-en-france_8270108.html#xtor=RSS-3-%5Beconomie%5D",
+   "summary": "La France insoumise et plusieurs partis politiques de gauche sont favorables à une plus grande taxation des Français les plus riches. Le coordinateur LFI Manuel Bompard déplore que, à chaque fois que le sujet est…",
+   "source": "franceinfo Éco",
+   "date": "2026-11-20T06:59:14+00:00"
+  },
+  {
+   "title": "\"Plus de restrictions\" avec la réforme du crédit à la consommation, \"c'est la bonne direction\", estime une association de lutte contre le surendettement",
+   "link": "https://www.franceinfo.fr/economie/plus-de-restrictions-avec-la-reforme-du-credit-a-la-consommation-c-est-la-bonne-direction-estime-une-association-de-lutte-contre-le-surendettement_8291786.html#xtor=RSS-3-%5Beconomie%5D",
+   "summary": "Dès le vendredi 20 novembre, avant d'octroyer un découvert bancaire, la banque devra évaluer la solvabilité du client et s'assurer qu'il sera en mesure de rembourser ultérieurement.",
+   "source": "franceinfo Éco",
+   "date": "2026-11-20T06:56:06+00:00"
+  },
+  {
+   "title": "Les armateurs français veulent peser dans la campagne présidentielle pour défendre leur compétitivité",
+   "link": "https://www.franceinfo.fr/replay-radio/le-brief-eco/les-armateurs-francais-veulent-peser-dans-la-campagne-presidentielle-pour-defendre-leur-competitivite_8270081.html#xtor=RSS-3-%5Beconomie%5D",
+   "summary": "Face à la concurrence internationale, les armateurs français demandent aux candidats à la présidentielle de préserver leurs avantages fiscaux et sociaux. Ils alertent sur les risques pour la compétitivité de la flotte…",
+   "source": "franceinfo Éco",
+   "date": "2026-11-20T06:35:15+00:00"
+  },
+  {
+   "title": "Le sommet de Paris contre l’oligarchie internationale, un clin d’œil au colloque Lippmann qui a inventé le néolibéralisme",
+   "link": "https://www.lemonde.fr/idees/article/2026/11/20/le-sommet-de-paris-contre-l-oligarchie-internationale-un-clin-d-il-au-colloque-lippmann-qui-a-invente-le-neoliberalisme_6813596_3232.html",
+   "summary": "Les organisateurs du sommet prévu le 21 novembre rêvent d’avoir un impact de même ampleur que celui de la conférence qui, en 1938, à Paris, a été le moment refondateur du libéralisme.",
+   "source": "Le Monde Économie",
+   "date": "2026-11-20T06:30:02+00:00"
+  },
+  {
+   "title": "Dépression, burn-out, suicide... Le mal-être des vétérinaires, au cœur des crises agricoles",
+   "link": "https://www.franceinfo.fr/environnement/biodiversite/animaux/depression-burn-out-suicide-le-mal-etre-des-veterinaires-au-c-ur-des-crises-agricoles_8290637.html#xtor=RSS-3-%5Beconomie%5D",
+   "summary": "C'est l'une des professions les plus touchées par la dépression, le burn-out et même le suicide. Les vétérinaires sont reçus ce vendredi matin par le délégué interministériel de la prévention du mal-être en agriculture.…",
+   "source": "franceinfo Éco",
+   "date": "2026-11-20T05:18:55+00:00"
+  },
+  {
+   "title": "\"Tout est arrêté, le coût de la transmission devient totalement prohibitif\" : des entrepreneurs dénoncent la réforme de l'apport-cession",
+   "link": "https://www.franceinfo.fr/economie/entreprises/tout-est-arrete-le-cout-de-la-transmission-devient-totalement-prohibitif-des-entrepreneurs-denoncent-la-reforme-de-l-apport-cession_8290397.html#xtor=RSS-3-%5Beconomie%5D",
+   "summary": "Le texte du budget 2027 n'est pas encore voté, mais les entreprises anticipent certaines mesures envisagées, notamment sur la transmission via la réforme de l'apport-cession. Certains patrons dénoncent une procédure qui…",
+   "source": "franceinfo Éco",
+   "date": "2026-11-20T05:04:14+00:00"
+  },
+  {
+   "title": "Les nouvelles règles d’Airbnb suscitent la colère des petits propriétaires : « Le fait de payer n’offre pas tous les droits »",
+   "link": "https://www.lemonde.fr/economie/article/2026/11/20/vaisselle-poubelles-draps-les-nouvelles-regles-d-airbnb-suscitent-la-colere-des-petits-proprietaires_6813590_3234.html",
+   "summary": "Des dizaines de milliers d’hôtes dénoncent l’encadrement des consignes sur les tâches ménagères et la modification des commissions. Certains quittent la plateforme, accusée de se rapprocher du modèle hôtelier.",
+   "source": "Le Monde Économie",
+   "date": "2026-11-20T05:03:10+00:00"
+  },
+  {
+   "title": "Comment le problème oligarchique s’est imposé dans le débat démocratique",
+   "link": "https://www.lemonde.fr/idees/article/2026/11/20/comment-le-probleme-oligarchique-s-est-impose-dans-le-debat-democratique_6813586_3232.html",
+   "summary": "Samedi 21 novembre doit se tenir à Paris un sommet contre l’oligarchie internationale avec la participation de plusieurs Prix Nobel. Car s’il y a encore quinze ans, le mot « oligarque » visait surtout les ultrariches…",
+   "source": "Le Monde Économie",
+   "date": "2026-11-20T05:00:18+00:00"
+  },
+  {
+   "title": "Comment la France a échoué à enrayer sa désindustrialisation : « Plus de 3 000 usines ont fermé depuis 2009 »",
+   "link": "https://www.lemonde.fr/economie/article/2026/11/20/comment-la-france-a-echoue-a-enrayer-sa-desindustrialisation-plus-de-3-000-usines-ont-ferme-depuis-2009_6813580_3234.html",
+   "summary": "En cinq décennies, la France, longtemps pays de production, est devenue un pays de consommation de biens produits à l’étranger. L’ensemble des filières a été touché par ce mouvement, avec des répercussions sociales et…",
+   "source": "Le Monde Économie",
+   "date": "2026-11-20T04:45:09+00:00"
+  },
+  {
+   "title": "Qui est concerné par les nouvelles règles sur le découvert autorisé, qui entrent en vigueur vendredi ?",
+   "link": "https://www.franceinfo.fr/economie/qui-est-concerne-par-les-nouvelles-regles-sur-le-decouvert-autorise-qui-entrent-en-vigueur-vendredi_8289839.html#xtor=RSS-3-%5Beconomie%5D",
+   "summary": "Les nouvelles dispositions vont aligner les conditions pour les découverts de moins de 200 euros et ceux remboursables dans un délai de moins d'un mois sur celles des crédits à la consommation, plus restrictives.",
+   "source": "franceinfo Éco",
+   "date": "2026-11-20T04:40:27+00:00"
+  },
+  {
+   "title": "En Lozère, au sommet d’une montagne, un radar traque les trajectoires suspectes de satellites",
+   "link": "https://www.lemonde.fr/economie/article/2026/11/20/en-lozere-au-sommet-d-une-montagne-un-radar-traque-les-trajectoires-suspectes-de-satellites_6813556_3234.html",
+   "summary": "Face à l’explosion du nombre de satellites et à la montée des menaces en orbite, Look Up, une start-up fondée par le général Michel Friedling, premier chef du commandement de l’espace, a mis en service, à…",
+   "source": "Le Monde Économie",
+   "date": "2026-11-20T04:30:04+00:00"
+  },
+  {
+   "title": "Vie chère en outre-mer : l’Assemblée nationale vote une « petite avancée »",
    "link": "https://www.lemonde.fr/politique/article/2026/11/20/les-deputes-votent-une-petite-avancee-contre-la-vie-chere-en-outre-mer_6813481_823448.html",
    "summary": "La proposition de loi portée par le sénateur Victorin Lurel et le député Christian Baptiste a été adoptée à l’unanimité à l’Assemblée nationale jeudi, en attendant le grand texte promis par le gouvernement.",
    "source": "Le Monde Économie",
-   "date": "2026-11-20T00:08:13+00:00"
+   "date": "2026-11-20T00:08:12+00:00"
   },
   {
-   "title": "Intelligence artificielle : l’action Anthropic finit sa première journée en hausse de 17 % et valorise l’entreprise à 1 280 milliards de dollars",
+   "title": "IA : l’action Anthropic finit sa première journée en hausse de 17 % et valorise l’entreprise à 1 280 milliards de dollars",
    "link": "https://www.lemonde.fr/economie/article/2026/11/20/intelligence-artificielle-l-action-anthropic-finit-sa-premiere-journee-en-hausse-de-17-et-valorise-l-entreprise-a-1-280-milliards-de-dollars_6813415_3234.html",
-   "summary": "L’introduction en Bourse spectaculaire du leader de l’IA n’a pas empêché Wall Street de finir en forte baisse jeudi, sur fond de mouvement anti-IA et d’interrogations sur le modèle économique de ces sociétés.",
+   "summary": "L’introduction en Bourse spectaculaire du leader de l’Intelligence artificielle n’a pas empêché Wall Street de finir en forte baisse jeudi, sur fond de mouvement anti-IA et d’interrogations sur le modèle économique de…",
    "source": "Le Monde Économie",
-   "date": "2026-11-19T23:30:58+00:00"
+   "date": "2026-11-19T23:30:54+00:00"
   },
   {
    "title": "L'entreprise américaine d'intelligence artificielle Anthropic signe une entrée en Bourse historique en détrônant SpaceX",
@@ -177,25 +261,11 @@
    "date": "2026-11-19T10:58:06+00:00"
   },
   {
-   "title": "Pourquoi Anthropic interdit désormais les insultes contre son IA Claude",
-   "link": "https://www.franceinfo.fr/internet/intelligence-artificielle/pourquoi-anthropic-interdit-desormais-les-insultes-contre-son-ia-claude_8289599.html#xtor=RSS-3-%5Beconomie%5D",
-   "summary": "Alors qu'elle entre en Bourse ce jeudi, la société a décidé d'interdire les comportements insultants et répétés envers son IA, au nom de son bien-être. Une justification qui laisse les chercheurs sceptiques, alors que…",
-   "source": "franceinfo Éco",
-   "date": "2026-11-19T10:08:23+00:00"
-  },
-  {
    "title": "L’emploi accompagné, un outil d’insertion pour les travailleurs handicapés, qui « permet d’anticiper les difficultés »",
    "link": "https://www.lemonde.fr/societe/article/2026/11/19/l-emploi-accompagne-un-outil-d-insertion-pour-les-travailleurs-handicapes-qui-permet-d-anticiper-les-difficultes_6813268_3224.html",
    "summary": "Léa, Valérie ou Jessee sont soutenus par un « job coach », pour trouver ou conserver un emploi classique qui prendra en compte leurs besoins spécifiques liés à leur handicap.",
    "source": "Le Monde Économie",
    "date": "2026-11-19T10:00:07+00:00"
-  },
-  {
-   "title": "Après une \"excellente\" saison passée en Savoie, les salariés des stations de ski demandent une \"augmentation de 7%\" des salaires",
-   "link": "https://www.franceinfo.fr/economie/apres-une-excellente-saison-passee-en-savoie-les-salaries-des-stations-de-ski-demandent-une-augmentation-de-7-des-salaires_8289698.html#xtor=RSS-3-%5Beconomie%5D",
-   "summary": "Alors que l'ouverture des stations de ski approche, la CGT se mobilise en Savoie pour une hausse des salaires des employés, justifiée par une \"excellente saison\" l'an dernier.",
-   "source": "franceinfo Éco",
-   "date": "2026-11-19T09:43:21+00:00"
   },
   {
    "title": "Prélèvement Forfaitaire Unique : dispense d’acompte à envoyer avant fin novembre 2026",
@@ -205,13 +275,6 @@
    "date": "2026-11-19T09:37:17+00:00"
   },
   {
-   "title": "\"Ça a l'air intéressant\" : Black Friday, promotions de Noël… Le mois de novembre est-il celui des bonnes affaires ?",
-   "link": "https://www.franceinfo.fr/economie/commerce/ca-a-l-air-interessant-black-friday-promotions-de-noel-le-mois-de-novembre-est-il-celui-des-bonnes-affaires_8289665.html#xtor=RSS-3-%5Beconomie%5D",
-   "summary": "Entre les promotions avant Noël et le Back Friday, le mois de novembre semble être propice aux rabais. En pleine crise du pouvoir d'achat, les commerçants comptent sur cette période pour vendre.",
-   "source": "franceinfo Éco",
-   "date": "2026-11-19T09:26:40+00:00"
-  },
-  {
    "title": "Budget de la « Sécu » pour 2027 : la question-clé de l’effort demandé aux retraités",
    "link": "https://www.lemonde.fr/politique/article/2026/11/19/budget-de-la-secu-pour-2027-la-question-cle-de-l-effort-demande-aux-retraites_6813262_823448.html",
    "summary": "Adopté, mercredi, au Sénat, le projet de loi de financement de la Sécurité sociale devrait être examiné, fin novembre, en commission mixte paritaire afin d’essayer de concilier les positions des deux Chambres du…",
@@ -219,74 +282,11 @@
    "date": "2026-11-19T09:07:47+00:00"
   },
   {
-   "title": "La régularisation de travailleurs sans-papiers est une mesure pour aider les entreprises en \"grandes difficultés de recrutement\", pointe un député PS",
-   "link": "https://www.franceinfo.fr/economie/emploi/la-regularisation-de-travailleurs-sans-papiers-est-une-mesure-pour-aider-les-entreprises-en-grandes-difficultes-de-recrutement-pointe-un-depute-ps_8289641.html#xtor=RSS-3-%5Beconomie%5D",
-   "summary": "Paul Christophle porte à l'Assemblée nationale une loi pour régulariser les travailleurs en situation irrégulière. Une mesure censée alléger les \"difficultés de démarches administratives\" des entreprises, selon le…",
-   "source": "franceinfo Éco",
-   "date": "2026-11-19T09:01:30+00:00"
-  },
-  {
    "title": "En quoi l’affaire Nvidia met en danger Donald Trump ? Comprendre en trois minutes",
    "link": "https://www.lemonde.fr/comprendre-en-3-minutes/video/2026/11/19/en-quoi-l-affaire-nvidia-met-en-danger-donald-trump-comprendre-en-trois-minutes_6813260_6176282.html",
    "summary": "Depuis le début du scandale lié à la société de microprocesseurs Nvidia, l’administration Trump traverse une crise politique.",
    "source": "Le Monde Économie",
    "date": "2026-11-19T09:00:20+00:00"
-  },
-  {
-   "title": "« L’impopularité des droits de douane imposés par Donald Trump révèle les limites de sa politique économique, fondée sur une illusion »",
-   "link": "https://www.lemonde.fr/idees/article/2026/11/19/l-impopularite-des-droits-de-douane-revele-les-limites-de-la-politique-economique-de-donald-trump-fondee-sur-une-illusion_6813256_3232.html",
-   "summary": "L’économiste Antoine Bouët liste, dans une tribune au « Monde », les cinq promesses non tenues du protectionnisme mis en œuvre par le président américain et qui explique, dans une large mesure, la déroute du camp…",
-   "source": "Le Monde Économie",
-   "date": "2026-11-19T09:00:02+00:00"
-  },
-  {
-   "title": "Emploi et handicap : le gouvernement souhaite supprimer les restrictions d’accès à 36 métiers",
-   "link": "https://www.lemonde.fr/societe/article/2026/11/19/emploi-et-handicap-le-gouvernement-souhaite-supprimer-les-restrictions-d-acces-a-36-metiers_6813253_3224.html",
-   "summary": "Les représentants du secteur du handicap dénoncent une mesure discriminatoire et obsolète. Mais les employeurs la défendent au nom de la sécurité et des coûts d’adaptation des postes. Ils y trouvent aussi un avantage…",
-   "source": "Le Monde Économie",
-   "date": "2026-11-19T08:30:09+00:00"
-  },
-  {
-   "title": "L’extension des aéroports de Roissy - Charles-de-Gaulle et d’Orly validée, sous réserve, par le régulateur des transports",
-   "link": "https://www.lemonde.fr/economie/article/2026/11/19/l-extension-des-aeroports-de-roissy-charles-de-gaulle-et-d-orly-validee-sous-reserve-par-le-regulateur-des-transports_6813252_3234.html",
-   "summary": "L’autorité indépendante a donné son feu vert au contrat de régulation économique signé entre l’Etat et le Groupe ADP. Cela ouvre la voie à une hausse de la capacité des aéroports franciliens, de 110 millions de…",
-   "source": "Le Monde Économie",
-   "date": "2026-11-19T08:28:38+00:00"
-  },
-  {
-   "title": "\"La colère des élus est très forte\" : face à la baisse de dotation prévue, des maires placent un ruban noir sur les panneaux de leur ville",
-   "link": "https://www.franceinfo.fr/economie/budget/la-colere-des-elus-est-tres-forte-face-a-la-baisse-de-dotation-prevue-des-maires-placent-un-ruban-noir-sur-les-panneaux-de-leur-ville_8289602.html#xtor=RSS-3-%5Beconomie%5D",
-   "summary": "Les parlementaires débattent en ce moment du budget de l'État pour l'année 2027. Le texte prévoit cinq milliards d'euros d'économie pour les collectivités : la présidente de l’Association des maires du Cher appelle à…",
-   "source": "franceinfo Éco",
-   "date": "2026-11-19T08:25:52+00:00"
-  },
-  {
-   "title": "L'économiste Gabriel Zucman veut alerter sur \"les milliardaires\" qui \"menacent nos démocraties\" dans un nouveau manifeste",
-   "link": "https://www.franceinfo.fr/economie/l-economiste-gabriel-zucman-veut-alerter-sur-les-milliardaires-qui-menacent-nos-democraties-dans-un-nouveau-manifeste_8289578.html#xtor=RSS-3-%5Beconomie%5D",
-   "summary": "\"L'extrême richesse, c'est toujours un extrême pouvoir\", dénonce Gabriel Zucman sur France Inter. Ce nouveau livre propose toujours une taxe sur les très hauts patrimoines mais aussi un nouvel impôt de \"régularisation…",
-   "source": "franceinfo Éco",
-   "date": "2026-11-19T08:15:36+00:00"
-  },
-  {
-   "title": "Handicap : des job dating inversés pour accélérer le recrutement",
-   "link": "https://www.franceinfo.fr/sante/handicap/handicap-des-job-dating-inverses-pour-accelerer-le-recrutement_8289590.html#xtor=RSS-3-%5Beconomie%5D",
-   "summary": "En France, seulement 4 personnes en situation de handicap sur 10 ont un emploi, selon les chiffres de France Travail. L'objectif, en pleine semaine européenne de l’emploi des personnes en situation de handicap, est donc…",
-   "source": "franceinfo Éco",
-   "date": "2026-11-19T08:10:54+00:00"
-  },
-  {
-   "title": "Régularisation des sans-papiers : « Nous ne pouvons pas bénéficier de leur travail et leur refuser la stabilité administrative qui leur permettrait de vivre dignement »",
-   "link": "https://www.lemonde.fr/idees/article/2026/11/19/regularisation-des-sans-papiers-nous-ne-pouvons-pas-beneficier-de-leur-travail-et-leur-refuser-la-stabilite-administrative-qui-leur-permettrait-de-vivre-dignement_6813248_3232.html",
-   "summary": "Trente-sept chercheurs soutiennent, dans une tribune au « Monde », la proposition de loi visant à créer un dispositif de régularisation des étrangers en situation irrégulière présents sur notre territoire, examinée à…",
-   "source": "Le Monde Économie",
-   "date": "2026-11-19T07:00:13+00:00"
-  },
-  {
-   "title": "Trains de nuit : l’Etat renonce à commander des rames neuves et opte pour la rénovation des voitures Corail",
-   "link": "https://www.lemonde.fr/economie/article/2026/11/19/trains-de-nuit-l-etat-renonce-a-commander-des-rames-neuves-et-opte-pour-la-renovation-des-voitures-corail_6813244_3234.html",
-   "summary": "Le ministre des transports a confirmé que l’Etat commanderait 27 nouvelles locomotives mais pas de nouvelles rames, leur coût dépassant le budget prévu. La SNCF devra rénover 180 voitures Corail, dont certaines ont plus…",
-   "source": "Le Monde Économie",
-   "date": "2026-11-19T06:40:14+00:00"
   },
   {
    "title": "Un décret vient encadrer la pratique de la médecine esthétique",
